@@ -2717,37 +2717,27 @@
     "reactedBy": "Reaktion von",
     "addReaction": "Reaktion hinzufügen",
     "reactedByMore": "und {{count}} andere",
-    "showSeconds": {
-      "one": "vor 1 Sekunde",
-      "other": "vor {{count}} Sekunden",
-      "zero": "Soeben",
-      "many": "vor {{count}} Sekunden"
-    },
-    "showMinutes": {
-      "one": "vor 1 Minute",
-      "other": "vor {{count}} Minuten",
-      "many": "vor {{count}} Minuten"
-    },
-    "showHours": {
-      "one": "vor 1 Stunde",
-      "other": "vor {{count}} Stunden",
-      "many": "vor {{count}} Stunden"
-    },
-    "showDays": {
-      "one": "vor 1 Tag",
-      "other": "vor {{count}} Tagen",
-      "many": "vor {{count}} Tagen"
-    },
-    "showMonths": {
-      "one": "vor 1 Monat",
-      "other": "vor {{count}} Monaten",
-      "many": "vor {{count}} Monaten"
-    },
-    "showYears": {
-      "one": "vor 1 Jahr",
-      "other": "vor {{count}} Jahren",
-      "many": "vor {{count}} Jahren"
-    },
+    "showSeconds_one": "vor 1 Sekunde",
+    "showSeconds_other": "vor {{count}} Sekunden",
+    "showSeconds_zero": "Soeben",
+    "showSeconds_many": "vor {{count}} Sekunden",
+    "showMinutes_one": "vor 1 Minute",
+    "showMinutes_other": "vor {{count}} Minuten",
+    "showMinutes_zero": "Vor einer Minute",
+    "showMinutes_many": "vor {{count}} Minuten",
+    "showHours_one": "vor 1 Stunde",
+    "showHours_other": "vor {{count}} Stunden",
+    "showHours_zero": "Vor einer Stunde",
+    "showHours_many": "vor {{count}} Stunden",
+    "showDays_one": "vor 1 Tag",
+    "showDays_zero": "Gestern",
+    "showDays_many": "Gestern",
+    "showMonths_one": "vor 1 Monat",
+    "showMonths_zero": "Vor einem Monat",
+    "showMonths_many": "Vor einem Monat",
+    "showYears_one": "vor 1 Jahr",
+    "showYears_zero": "Vor einem Jahr",
+    "showYears_many": "Vor einem Jahr",
     "reply": "Antworten",
     "deleteComment": "Kommentar löschen",
     "youAreNotOwner": "Du bist nicht der Verfasser dieses Kommentars",
