@@ -74,6 +74,7 @@
     "js-base64": "^3.7.5",
     "js-md5": "^0.8.3",
     "katex": "^0.16.7",
+    "lib0": "^0.2.104",
     "lightgallery": "^2.7.2",
     "link-preview-js": "^3.0.14",
     "lodash-es": "^4.17.21",
