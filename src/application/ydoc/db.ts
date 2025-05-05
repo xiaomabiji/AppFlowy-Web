@@ -1,12 +1,24 @@
 import * as random from 'lib0/random'
-import * as idb from 'lib0/indexeddb'
+import * as idb from 'idb'
 import * as Y from 'yjs'
+import { update } from 'cypress/types/lodash'
 
 const log = console.log
 
+export interface Update {
+    /** unique document identifier (e.g. a UUID). */
+    docId: string
+    /** Yjs Doc update */
+    update: Uint8Array
+    /** Flags used to inform about details of Yjs serialization */
+    flags: number
+    /** If not null: unique stream message identifier assigned to an update by the server */
+    lastMessageId: string|null
+}
+
 export class Db {
     workspaceId: string
-    private _db: IDBDatabase|null
+    private _db: idb.IDBPDatabase|null
     /** string last received Redis stream message ID */
     private _lastMessageId: string
     private _storeTask: any|null
@@ -21,7 +33,7 @@ export class Db {
         this._clientId = random.uint53()
     }
 
-    get db(): IDBDatabase {
+    get db(): idb.IDBPDatabase {
         if (!this._db) {
             throw Error('IndexedDb not initialized')
         }
@@ -39,18 +51,20 @@ export class Db {
     set lastMessageId(value: string) {
         let tx = this.db.transaction('meta', 'readwrite')
         let meta = tx.objectStore('meta')
-        idb.put(meta, value, 'lastMessageId')
+        meta.put(value, 'lastMessageId')
     }
 
     async open() {
         if (!this._db) {
-            this._db = await idb.openDB('appflowy/' + this.workspaceId, db => {
-                switch (db.version) {
-                    default: {
-                        const updates = db.createObjectStore('updates', {autoIncrement: true}) // full document states
-                        updates.createIndex('ixDocId', 'docId', {unique: false})
-                        db.createObjectStore('docs') // full document states
-                        db.createObjectStore('meta') // metadata (e.g. last message ID, client ID)
+            this._db = await idb.openDB('appflowy/' + this.workspaceId, 1, {
+                upgrade(db, oldVersion, newVersion, transaction) {
+                    switch (oldVersion) {
+                        default: {
+                            const updates = db.createObjectStore('updates', { keyPath: 'id', autoIncrement: true}) // full document states
+                            updates.createIndex('ixDocId', 'docId', {unique: false})
+                            db.createObjectStore('docs') // full document states
+                            db.createObjectStore('meta') // metadata (e.g. last message ID, client ID)
+                        }
                     }
                 }
             })
@@ -61,12 +75,12 @@ export class Db {
     async fetchMeta() {
         const tx = this.db.transaction('meta', 'readwrite')
         const meta = tx.objectStore('meta')
-        this._lastMessageId = '' + await idb.get(meta, 'lastMessageId') || '0-0'
-        const clientId = +(await idb.get(meta, 'lastMessageId'))
+        this._lastMessageId = '' + await meta.get('lastMessageId') || '0-0'
+        const clientId = +(await meta.get('lastMessageId'))
         if (clientId) {
             this._clientId = clientId
         } else {
-            await idb.put(meta, this._clientId, 'clientId')
+            await meta.put(this._clientId, 'clientId')
         }
     }
 
@@ -93,87 +107,100 @@ export class Db {
             collectionid: this.workspaceId,
         })
         doc.clientID = this.clientId
-        return this.loadDoc(doc);
+        return this.mount(doc);
     }
 
     /**
+     * Mount a Yjs document to the IndexedDB database.
+     * 
      * @param {Y.Doc} doc
      * @return {Y.Doc}
      */
-    async loadDoc(doc: Y.Doc) {
+    async mount(doc: Y.Doc) {
         const db = this.db
-        let tx = db.transaction('docs', 'readonly')
-        let docs = tx.objectStore('docs')
-        let docState: Uint8Array = await idb.get(docs, doc.guid)
+        const readTx = db.transaction(['docs', 'updates'], 'readonly')
+        const docs = readTx.objectStore('docs')
+        const docState = await docs.get(doc.guid)
         if (docState) {
             log(`[${doc.guid}] last document state: ${docState.length} bytes`)
             Y.applyUpdateV2(doc, docState)
         } else {
             log(`[${doc.guid}] full document state not found`)
         }
-        let appliedUpdates = []
-        tx = db.transaction('updates', 'readonly')
-        let updateIndex = tx.objectStore('updates').index('ixDocId')
-        let entries = await idb.getAllKeysValues(updateIndex, doc.guid)
-        for (const entry of entries) {
-            log(`[${doc.guid}] applying update ${entry.k}`)
-            switch (entry.v.flags) {
+        const appliedUpdates = []
+        const updates = readTx.objectStore('updates')
+        const updateIndex = updates.index('ixDocId')
+        
+        const keys = await updateIndex.getAllKeys(doc.guid)
+        const values = await updateIndex.getAll(keys)
+        for (let i = 0; i < values.length; i++) {
+            const key = keys[i]
+            const value = values[i]
+            log(`[${doc.guid}] applying update ${key}`)
+
+            switch (value.flags) {
                 case 0: {
-                    Y.applyUpdate(doc, entry.v.update)
+                    Y.applyUpdate(doc, value.update)
                     break
                 }
                 case 1: {
-                    Y.applyUpdateV2(doc, entry.v.update)
+                    Y.applyUpdateV2(doc, value.update)
                     break
                 }
             }
-            appliedUpdates.push(entry.k)
-        }
-
-        if (appliedUpdates.length > 0) {
-            log(`[${doc.guid}] compacting ${appliedUpdates.length} applied updates`)
-            tx = this.db.transaction('docs', 'readwrite')
-            docs = tx.objectStore('docs')
-            const docState = Y.encodeStateAsUpdateV2(doc)
-            await idb.put(docs, docState, doc.guid)
-            tx = this.db.transaction('updates', 'readwrite')
-            const updates = tx.objectStore('updates')
-            await idb.del(updates, appliedUpdates.length)
+            appliedUpdates.push(key)
         }
 
         // signup for storing updates to newly loaded doc
-        doc.on('update', (update: Uint8Array, lastMessageId: string) => {
-            log(`[${doc.guid}] persisting update (${update.length} bytes) from ${lastMessageId || 'local'}`)
+        doc.on('update', (bytes: Uint8Array, lastMessageId: string) => {
+            log(`[${doc.guid}] persisting update (${bytes.length} bytes) from ${lastMessageId || 'local'}`)
             let db = this
+            const update: Update = {
+                docId: doc.guid,
+                update: bytes,
+                flags: 0,
+                lastMessageId: lastMessageId || null,
+            }
             if (db._storeTask) {
                 db._storeTask = db._storeTask.then(() => {
-                    return db.storeUpdate(doc.guid, update, 0, lastMessageId)
+                    return db.storeUpdate(update)
                 })
             } else {
-                db._storeTask = db.storeUpdate(doc.guid, update, 0, lastMessageId)
+                db._storeTask = db.storeUpdate(update)
             }
         })
+
+        if (appliedUpdates.length > 0) {
+            // there are pending updates which we can merge into the document state
+            // and delete from the database
+            log(`[${doc.guid}] compacting ${appliedUpdates.length} applied updates`)
+
+            const writeTx = this.db.transaction(['docs', 'updates'], 'readwrite')
+            const docs = writeTx.objectStore('docs')
+            const docState = Y.encodeStateAsUpdateV2(doc)
+            await docs.put(docState, doc.guid)
+            const updates = writeTx.objectStore('updates')
+            await updates.delete(appliedUpdates)
+        }
         return doc
     }
 
     /**
      * Persist document update to the database.
      *
-     * @param {string} docId unique document identifier (e.g. a UUID).
-     * @param {Uint8Array} update Yjs document update.
-     * @param {number} flags
-     * @param {string|null} lastMessageId last received Redis stream message ID associated with this update. If null
-     * this update is considered a local change.
+     * @param {Update} update
      * @returns {Promise<number>}
      */
-    async storeUpdate(docId: string, update: Uint8Array, flags: number, lastMessageId: string) {
+    async storeUpdate(update: Update): Promise<number> {
         const tx = this.db.transaction(['updates'], 'readwrite')
         const updates = tx.objectStore('updates')
-        const id = await idb.addAutoKey(updates, {docId, update, flags, lastMessageId})
-        this._lastMessageId = lastMessageId
+        const id = await updates.put(update)
+        if (update.lastMessageId && update.lastMessageId > this.lastMessageId) {
+            this.lastMessageId = update.lastMessageId
+        }
         this._storeTask = null
-        log(`[${docId}] stored update ${id}`)
-        return id
+        log(`[${update.docId}] stored update ${id}`)
+        return +id
     }
 
     /**
@@ -182,12 +209,17 @@ export class Db {
      * @returns {Promise<void>}
      */
     async deleteDoc(docId: string) {
+        if (this._storeTask) {
+            // if there are pending store tasks, wait for them to finish
+            await this._storeTask
+            this._storeTask = null
+        }
         const tx = this.db.transaction(['docs', 'updates'], 'readwrite')
         const docs = tx.objectStore('docs')
         const updates = tx.objectStore('updates')
         let updateIndex = updates.index('ixDocId')
-        let indexKeys = await idb.getAllKeys(updateIndex, docId)
-        await idb.del(updates, indexKeys)
-        await idb.del(docs, docId)
+        let indexKeys = await updateIndex.getAllKeys(docId)
+        await updates.delete(indexKeys)
+        await docs.delete(docId)
     }
 }

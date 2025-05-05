@@ -1,5 +1,9 @@
 lockfileVersion: "9.0"
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 dependencies:
   "@appflowyinc/ai-chat":
     specifier: 0.1.25
@@ -136,6 +140,9 @@ dependencies:
   i18next-resources-to-backend:
     specifier: ^1.1.4
     version: 1.2.1
+  idb:
+    specifier: ^8.0.2
+    version: 8.0.2
   is-hotkey:
     specifier: ^0.2.0
     version: 0.2.0
@@ -19621,15 +19628,47 @@ snapshots:
     dependencies:
       safer-buffer: 2.1.2
 
-  ieee754@1.2.1: {}
+  /ieee754@1.2.1:
+    resolution:
+      {
+        integrity: sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==,
+      }
+    dev: true
 
-  ignore@5.3.2: {}
+  /ignore@5.3.1:
+    resolution:
+      {
+        integrity: sha512-5Fytz/IraMjqpwfd34ke28PTVMjZjJG2MPn5t7OE4eUCUNf8BAa7b5WUS9/Qvr6mwOQS7Mk6vdsMno5he+T8Xw==,
+      }
+    engines: { node: ">= 4" }
+    dev: true
 
-  immer@10.1.1: {}
+  /immer@10.1.1:
+    resolution:
+      {
+        integrity: sha512-s2MPrmjovJcoMaHtx6K11Ra7oD05NT97w1IC5zpMkT6Atjr7H8LjaDd81iIxUYpMKSRRNMJE703M1Fhr/TctHw==,
+      }
+    dev: false
 
-  immutable@5.1.2: {}
+  /immutable@4.3.6:
+    resolution:
+      {
+        integrity: sha512-Ju0+lEMyzMVZarkTn/gqRpdqd5dOPaz1mCZ0SH3JV6iFw81PldE/PEB1hWVEA288HPt4WXW8O7AWxB10M+03QQ==,
+      }
 
-  import-fresh@3.3.1:
+  /immutable@5.0.3:
+    resolution:
+      {
+        integrity: sha512-P8IdPQHq3lA1xVeBRi5VPqUm5HDgKnx0Ru51wZz5mjxHr5n3RWhjIpOFU7ybkUxfB+5IToy+OLaHYDBIWsv+uw==,
+      }
+    dev: false
+
+  /import-fresh@3.3.0:
+    resolution:
+      {
+        integrity: sha512-veYYhQa+D1QBKznvhUHxb8faxlrwUnxseDAbAp457E0wLNio2bOSKnjYDhMj+YiAq61xrMGhQk9iXVk5FzgQMw==,
+      }
+    engines: { node: ">=6" }
     dependencies:
       parent-module: 1.0.1
       resolve-from: 4.0.0
@@ -23376,12 +23415,35 @@ snapshots:
 
   yjs@14.0.0-1:
     dependencies:
-      lib0: 0.2.108
+      lib0: 0.2.104
+    dev: false
 
-  yn@3.1.1: {}
+  /yn@3.1.1:
+    resolution:
+      {
+        integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==,
+      }
+    engines: { node: ">=6" }
+    dev: true
 
-  yocto-queue@0.1.0: {}
+  /yocto-queue@0.1.0:
+    resolution:
+      {
+        integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==,
+      }
+    engines: { node: ">=10" }
 
-  yocto-queue@1.2.1: {}
+  /yocto-queue@1.0.0:
+    resolution:
+      {
+        integrity: sha512-9bnSc/HEW2uRy67wc+T8UwauLuPJVn28jb+GtJY16iiKWyvmYJRXVT4UamsAEGQfPohgr2q4Tq0sQbQlxTfi1g==,
+      }
+    engines: { node: ">=12.20" }
+    dev: true
 
-  zwitch@2.0.4: {}
+  /zwitch@2.0.4:
+    resolution:
+      {
+        integrity: sha512-bXE4cR/kVZhKZX/RjPEflHaKVhUVl85noU3v6b8apfQEc1x4A+zBxjZ4lN8LqGd6WZ3dl98pY4o717VFmoPp+A==,
+      }
+    dev: false
