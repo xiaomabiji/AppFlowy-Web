@@ -13,6 +13,7 @@ import { ReactComponent as Heading1 } from '@/assets/icons/h1.svg';
 import { ReactComponent as Heading2 } from '@/assets/icons/h2.svg';
 import { ReactComponent as Heading3 } from '@/assets/icons/h3.svg';
 import { ReactComponent as DownArrow } from '@/assets/icons/triangle_down.svg';
+import Button from '@mui/material/Button';
 
 const popoverProps: Partial<PopoverProps> = {
   anchorOrigin: {
@@ -20,12 +21,13 @@ const popoverProps: Partial<PopoverProps> = {
     horizontal: 'center',
   },
   transformOrigin: {
-    vertical: -8,
+    vertical: 'top',
     horizontal: 'center',
   },
   slotProps: {
     paper: {
-      className: 'bg-[var(--surface-primary)] rounded-[6px]',
+      className: 'bg-[var(--surface-primary)] rounded-[8px]',
+      style: { marginTop: '6px' }
     },
   },
 };
@@ -73,18 +75,18 @@ export function Heading() {
 
   const getActiveButton = useCallback(() => {
     if (isActivated(1)) {
-      return <Heading1 className={'h-4 w-4 text-fill-default'} />;
+      return <Heading1 className={'h-5 w-5 text-fill-default'} />;
     }
 
     if (isActivated(2)) {
-      return <Heading2 className={'h-4 w-4 text-fill-default'} />;
+      return <Heading2 className={'h-5 w-5 text-fill-default'} />;
     }
 
     if (isActivated(3)) {
-      return <Heading3 className={'h-4 w-4 text-fill-default'} />;
+      return <Heading3 className={'h-5 w-5 text-fill-default'} />;
     }
 
-    return <Heading3 className='h-4 w-4' />;
+    return <Heading3 className='h-5 w-5' />;
   }, [isActivated]);
 
   const [open, setOpen] = useState(false);
@@ -107,7 +109,7 @@ export function Heading() {
         }}
         tooltip={'Heading'}
       >
-        <div className={'flex items-center justify-center'}>
+        <div className={'flex items-center justify-center gap-1'}>
           {getActiveButton()}
           <DownArrow className={'h-5 w-3 text-icon-primary'} />
         </div>
@@ -124,20 +126,99 @@ export function Heading() {
           anchorEl={ref.current}
           {...popoverProps}
         >
-          <div className={'flex h-[32px] items-center justify-center px-2'}>
-            <ActionButton active={isActivated(1)} tooltip={t('editor.heading1')} onClick={toHeading(1)}>
-              <Heading1 className='h-4 w-4' />
-            </ActionButton>
-            <ActionButton active={isActivated(2)} tooltip={t('editor.heading2')} onClick={toHeading(2)}>
-              <Heading2 className='h-4 w-4' />
-            </ActionButton>
-            <ActionButton active={isActivated(3)} tooltip={t('editor.heading3')} onClick={toHeading(3)}>
-              <Heading3 className='h-4 w-4' />
-            </ActionButton>
+          <div className="flex flex-col w-[200px] rounded-[12px]" style={{ padding: 'var(--spacing-spacing-m)' }}>
+            <Button
+              startIcon={<Heading1 className="h-5 w-5" />}
+              color="inherit"
+              onClick={() => {
+                toHeading(1)();
+                setOpen(false);
+              }}
+              disableRipple
+              sx={{
+                '.MuiButton-startIcon': {
+                  margin: 0,
+                  marginRight: 'var(--spacing-spacing-m)'
+                },
+                padding: '0 var(--spacing-spacing-m)',
+                height: '32px',
+                minHeight: '32px',
+                borderRadius: '8px',
+                justifyContent: 'flex-start',
+                textAlign: 'left',
+                '&:hover': {
+                  backgroundColor: 'var(--fill-list-hover)'
+                },
+                ...(isActivated(1) && {
+                  backgroundColor: 'var(--fill-list-active)'
+                })
+              }}
+            >
+              {t('document.slashMenu.name.heading1')}
+            </Button>
+            <Button
+              startIcon={<Heading2 className="h-5 w-5" />}
+              color="inherit"
+              onClick={() => {
+                toHeading(2)();
+                setOpen(false);
+              }}
+              disableRipple
+              sx={{
+                '.MuiButton-startIcon': {
+                  margin: 0,
+                  marginRight: 'var(--spacing-spacing-m)'
+                },
+                padding: '0 var(--spacing-spacing-m)',
+                height: '32px',
+                minHeight: '32px',
+                borderRadius: '8px',
+                justifyContent: 'flex-start',
+                textAlign: 'left',
+                '&:hover': {
+                  backgroundColor: 'var(--fill-list-hover)'
+                },
+                ...(isActivated(2) && {
+                  backgroundColor: 'var(--fill-list-active)'
+                })
+              }}
+            >
+              {t('document.slashMenu.name.heading2')}
+            </Button>
+            <Button
+              startIcon={<Heading3 className="h-5 w-5" />}
+              color="inherit"
+              onClick={() => {
+                toHeading(3)();
+                setOpen(false);
+              }}
+              disableRipple
+              sx={{
+                '.MuiButton-startIcon': {
+                  margin: 0,
+                  marginRight: 'var(--spacing-spacing-m)'
+                },
+                padding: '0 var(--spacing-spacing-m)',
+                height: '32px',
+                minHeight: '32px',
+                borderRadius: '8px',
+                justifyContent: 'flex-start',
+                textAlign: 'left',
+                '&:hover': {
+                  backgroundColor: 'var(--fill-list-hover)'
+                },
+                ...(isActivated(3) && {
+                  backgroundColor: 'var(--fill-list-active)'
+                })
+              }}
+            >
+              {t('document.slashMenu.name.heading3')}
+            </Button>
           </div>
         </Popover>
-      )}
-    </div>
+      )
+      }
+    </div >
   );
 }
 

@@ -95,11 +95,10 @@ function AIAssistant() {
           className={'!text-ai-primary !hover:text-billing-primary '}
           tooltip={t('editor.askAI')}
         >
-          <div className={'flex items-center justify-center'}>
-            <AskAIIcon className='w-4 h-4' />
+          <div className={'flex items-center justify-center gap-1'}>
+            <AskAIIcon className='w-5 h-5' />
             <TriangleDownIcon className={'text-icon-primary w-3 h-5'} />
           </div>
-
         </ActionButton>
       </AIWriterMenu>
 

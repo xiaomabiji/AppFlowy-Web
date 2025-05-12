@@ -29,7 +29,7 @@ const ActionButton = forwardRef<
         className={`${className ?? ''
           } bg-transparent px-1.5 py-1.5 text-icon-primary hover:bg-[var(--fill-content-hover)] hover:text-fill-default`}
       >
-        <div className="w-5 h-5 flex items-center justify-center">
+        <div className="w-min-5 h-5 flex items-center justify-center">
           {children}
         </div>
       </IconButton>
