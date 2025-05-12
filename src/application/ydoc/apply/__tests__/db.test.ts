@@ -50,7 +50,7 @@ describe('IndexedDB', () => {
         const ydoc = new Y.Doc({guid});
         await db.mount(ydoc)
         const ytext = ydoc.getText('text');
-        expect(ytext.toString()).equal('hello');
+        expect(ytext.toString()).equal('hello', 'document state should be persisted');
         ydoc.destroy();
       }
 
@@ -60,7 +60,7 @@ describe('IndexedDB', () => {
         const ydoc = new Y.Doc({guid});
         await db.mount(ydoc)
         const ytext = ydoc.getText('text');
-        expect(ytext.toString()).equal('');
+        expect(ytext.toString()).equal('', 'document state should be empty after deletion');
         ydoc.destroy();
       }
     
