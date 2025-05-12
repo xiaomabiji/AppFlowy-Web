@@ -31,7 +31,7 @@ export function Underline() {
         </>
       }
     >
-      <UnderlineSvg className='h-4 w-4' />
+      <UnderlineSvg className='h-5 w-5' />
     </ActionButton>
   );
 }

@@ -44,7 +44,7 @@ export function SelectionToolbar() {
       <div
         ref={ref}
         className={
-          'selection-toolbar pointer-events-none transform transition-opacity duration-200 absolute z-[100] flex min-h-[32px] w-fit flex-grow items-center rounded-lg bg-[var(--fill-toolbar)] px-2 opacity-0 shadow-lg'
+          'selection-toolbar pointer-events-none transform transition-opacity duration-200 absolute z-[100] flex min-h-[32px] w-fit flex-grow items-center rounded-lg bg-[var(--surface-primary)] px-2 py-[var(--spacing-spacing-xs)] opacity-0 shadow-lg'
         }
         onMouseDown={(e) => {
           // prevent toolbar from taking focus away from editor
@@ -52,7 +52,7 @@ export function SelectionToolbar() {
           e.stopPropagation();
         }}
       >
-        <ToolbarActions/>
+        <ToolbarActions />
       </div>
     </SelectionToolbarContext.Provider>
   );

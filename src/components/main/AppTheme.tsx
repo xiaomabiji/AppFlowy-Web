@@ -191,7 +191,7 @@ function AppTheme({ children }: { children: React.ReactNode }) {
           MuiTooltip: {
             styleOverrides: {
               arrow: {
-                color: 'var(--fill-toolbar)',
+                color: 'var(--surface-primary)',
               },
               tooltip: {
                 backgroundColor: 'var(--fill-toolbar)',

@@ -31,7 +31,7 @@ export function Italic() {
         </>
       }
     >
-      <ItalicSvg className='h-4 w-4' />
+      <ItalicSvg className='h-5 w-5' />
     </ActionButton>
   );
 }

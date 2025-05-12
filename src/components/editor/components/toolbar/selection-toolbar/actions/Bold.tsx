@@ -32,7 +32,7 @@ export function Bold() {
         </>
       }
     >
-      <BoldSvg className='h-4 w-4' />
+      <BoldSvg className='h-5 w-5' />
     </ActionButton>
   );
 }

@@ -25,7 +25,7 @@ const popoverProps: Partial<PopoverProps> = {
   },
   slotProps: {
     paper: {
-      className: 'bg-[var(--fill-toolbar)] rounded-[6px]',
+      className: 'bg-[var(--surface-primary)] rounded-[6px]',
     },
   },
 };
@@ -109,7 +109,7 @@ export function Heading() {
       >
         <div className={'flex items-center justify-center'}>
           {getActiveButton()}
-          <DownArrow className={'h-5 w-3 text-icon-on-toolbar'} />
+          <DownArrow className={'h-5 w-3 text-icon-primary'} />
         </div>
       </ActionButton>
       {toolbarVisible && (

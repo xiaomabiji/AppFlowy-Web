@@ -20,17 +20,18 @@ const ActionButton = forwardRef<
       <IconButton
         ref={ref}
         onClick={onClick}
-        size={'small'}
+        size={'large'}
         style={{
-          color: active ? 'var(--fill-default)' : disabled ? 'var(--line-on-toolbar)' : undefined,
+          color: active ? 'var(--fill-default)' : disabled ? 'var(--text-caption)' : 'var(--icon-primary)',
         }}
         disabled={disabled}
         {...props}
-        className={`${
-          className ?? ''
-        } bg-transparent px-1 py-1 text-icon-on-toolbar hover:bg-transparent hover:text-fill-default`}
+        className={`${className ?? ''
+          } bg-transparent px-1.5 py-1.5 text-icon-primary hover:bg-[var(--fill-content-hover)] hover:text-fill-default`}
       >
-        {children}
+        <div className="w-5 h-5 flex items-center justify-center">
+          {children}
+        </div>
       </IconButton>
     </Tooltip>
   );
