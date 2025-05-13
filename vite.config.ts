@@ -99,6 +99,9 @@ export default defineConfig({
   server: {
     port: process.env.PORT ? parseInt(process.env.PORT) : 3000,
     strictPort: true,
+    host: '0.0.0.0',
+    // origin: 'http://*.appflowy.com',
+    origin: 'http://app-flowy-web.vercel.app',
     watch: {
       ignored: ['node_modules'],
     },
@@ -125,7 +128,7 @@ export default defineConfig({
           entryFileNames: 'static/js/[name]-[hash].js',
           assetFileNames: 'static/[ext]/[name]-[hash].[ext]',
           manualChunks(id) {
-            if(
+            if (
               // id.includes('/react@') ||
               // id.includes('/react-dom@') ||
               id.includes('/react-is@') ||
