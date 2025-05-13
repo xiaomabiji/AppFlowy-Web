@@ -31,7 +31,7 @@ export function InlineCode() {
         </>
       }
     >
-      <CodeSvg className='h-4 w-4' />
+      <CodeSvg className='h-5 w-5' />
     </ActionButton>
   );
 }

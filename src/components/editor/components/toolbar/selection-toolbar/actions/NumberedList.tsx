@@ -32,7 +32,7 @@ export function NumberedList() {
 
   return (
     <ActionButton active={isActivated} onClick={onClick} tooltip={t('document.plugins.numberedList')}>
-      <NumberedListSvg className='h-4 w-4' />
+      <NumberedListSvg className='h-5 w-5' />
     </ActionButton>
   );
 }

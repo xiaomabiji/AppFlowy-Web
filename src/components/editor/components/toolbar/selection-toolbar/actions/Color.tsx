@@ -215,7 +215,7 @@ function Color() {
   return (
     <>
       <ActionButton onClick={onClick} active={isActivated} tooltip={t('editor.color')}>
-        <ColorSvg className='h-4 w-4' />
+        <ColorSvg className='h-5 w-5' />
       </ActionButton>
       {toolbarVisible && (
         <Popover

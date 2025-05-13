@@ -78,7 +78,7 @@ function AIAssistant() {
         onClick={onClickImproveWriting}
         tooltip={t('editor.improveWriting')}
       >
-        <ImproveWritingIcon className='w-4 h-4' />
+        <ImproveWritingIcon className='w-5 h-5' />
       </ActionButton>
       <AIWriterMenu
         input={content}

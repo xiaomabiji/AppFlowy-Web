@@ -72,13 +72,13 @@ export function Align({ blockId, enabled = true }: { blockId?: string; enabled?:
 
     switch (align) {
       case AlignType.Left:
-        return <AlignLeftSvg className={'h-4 w-4 text-fill-default'} />;
+        return <AlignLeftSvg className={'h-5 w-5 text-fill-default'} />;
       case 'center':
-        return <AlignCenterSvg className={'h-4 w-4 text-fill-default'} />;
+        return <AlignCenterSvg className={'h-5 w-5 text-fill-default'} />;
       case 'right':
-        return <AlignRightSvg className={'h-4 w-4 text-fill-default'} />;
+        return <AlignRightSvg className={'h-5 w-5 text-fill-default'} />;
       default:
-        return <AlignLeftSvg className={'h-4 w-4'} />;
+        return <AlignLeftSvg className={'h-5 w-5'} />;
     }
   }, [getAlign]);
 
@@ -142,21 +142,21 @@ export function Align({ blockId, enabled = true }: { blockId?: string; enabled?:
             tooltip={t('document.plugins.optionAction.left')}
             onClick={toggleAlign(AlignType.Left)}
           >
-            <AlignLeftSvg className='h-4 w-4' />
+            <AlignLeftSvg className='h-5 w-5' />
           </ActionButton>
           <ActionButton
             active={getAlign() === AlignType.Center}
             tooltip={t('document.plugins.optionAction.center')}
             onClick={toggleAlign(AlignType.Center)}
           >
-            <AlignCenterSvg className='h-4 w-4' />
+            <AlignCenterSvg className='h-5 w-5' />
           </ActionButton>
           <ActionButton
             active={getAlign() === AlignType.Right}
             tooltip={t('document.plugins.optionAction.right')}
             onClick={toggleAlign(AlignType.Right)}
           >
-            <AlignRightSvg className='h-4 w-4' />
+            <AlignRightSvg className='h-5 w-5' />
           </ActionButton>
         </div>
       </Popover>

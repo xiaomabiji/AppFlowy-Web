@@ -32,7 +32,7 @@ export function BulletedList() {
 
   return (
     <ActionButton active={isActivated} onClick={onClick} tooltip={t('document.plugins.bulletedList')}>
-      <BulletedListSvg className='h-4 w-4' />
+      <BulletedListSvg className='h-5 w-5' />
     </ActionButton>
   );
 }

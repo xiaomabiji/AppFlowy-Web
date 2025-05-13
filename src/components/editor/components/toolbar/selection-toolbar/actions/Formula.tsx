@@ -99,7 +99,7 @@ function Formula() {
       disabled={!isActivated && (hasFormulaActivated || hasMentionActivated)}
       tooltip={t('document.plugins.createInlineMathEquation')}
     >
-      <MathSvg className='h-4 w-4' />
+      <MathSvg className='h-5 w-5' />
     </ActionButton>
   );
 }

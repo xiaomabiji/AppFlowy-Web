@@ -93,7 +93,7 @@ export function Href() {
   return (
     <>
       <ActionButton disabled={disabled} onClick={onClick} active={isActivated} tooltip={tooltip}>
-        <LinkSvg className='h-4 w-4' />
+        <LinkSvg className='h-5 w-5' />
       </ActionButton>
 
       <HrefPopover
