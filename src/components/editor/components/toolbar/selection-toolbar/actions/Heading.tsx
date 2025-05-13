@@ -135,6 +135,7 @@ export function Heading() {
                 setOpen(false);
               }}
               disableRipple
+              className="text-foreground"
               sx={{
                 '.MuiButton-startIcon': {
                   margin: 0,
@@ -164,6 +165,7 @@ export function Heading() {
                 setOpen(false);
               }}
               disableRipple
+              className="text-foreground"
               sx={{
                 '.MuiButton-startIcon': {
                   margin: 0,
@@ -193,6 +195,7 @@ export function Heading() {
                 setOpen(false);
               }}
               disableRipple
+              className="text-foreground"
               sx={{
                 '.MuiButton-startIcon': {
                   margin: 0,

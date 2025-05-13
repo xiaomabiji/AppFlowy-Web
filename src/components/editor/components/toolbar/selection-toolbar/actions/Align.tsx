@@ -145,6 +145,7 @@ export function Align({ blockId, enabled = true }: { blockId?: string; enabled?:
               toggleAlign(AlignType.Left)();
               setOpen(false);
             }}
+            className="text-foreground"
             disableRipple
             sx={{
               '.MuiButton-startIcon': {
@@ -174,6 +175,7 @@ export function Align({ blockId, enabled = true }: { blockId?: string; enabled?:
               toggleAlign(AlignType.Center)();
               setOpen(false);
             }}
+            className="text-foreground"
             disableRipple
             sx={{
               '.MuiButton-startIcon': {
@@ -203,6 +205,7 @@ export function Align({ blockId, enabled = true }: { blockId?: string; enabled?:
               toggleAlign(AlignType.Right)();
               setOpen(false);
             }}
+            className="text-foreground"
             disableRipple
             sx={{
               '.MuiButton-startIcon': {
