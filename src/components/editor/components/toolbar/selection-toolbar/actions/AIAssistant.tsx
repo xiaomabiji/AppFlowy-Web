@@ -74,7 +74,6 @@ function AIAssistant() {
   return (
     <>
       <ActionButton
-        className={'!text-ai-primary !hover:text-billing-primary'}
         onClick={onClickImproveWriting}
         tooltip={t('editor.improveWriting')}
       >
@@ -92,7 +91,6 @@ function AIAssistant() {
             setContent(CustomEditor.getSelectionContent(editor));
             setOpen(prev => !prev);
           }}
-          className={'!text-ai-primary !hover:text-billing-primary '}
           tooltip={t('editor.askAI')}
         >
           <div className={'flex items-center justify-center gap-1'}>
