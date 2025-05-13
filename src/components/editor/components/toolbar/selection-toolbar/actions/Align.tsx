@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { useSlateStatic } from 'slate-react';
 import { Element } from 'slate';
 import ActionButton from './ActionButton';
+import Button from '@mui/material/Button';
 
 const popoverProps: Partial<PopoverProps> = {
   anchorOrigin: {
@@ -25,7 +26,7 @@ const popoverProps: Partial<PopoverProps> = {
   },
   slotProps: {
     paper: {
-      className: 'bg-[var(--fill-toolbar)] rounded-[6px]',
+      className: 'bg-[var(--surface-primary)] rounded-[6px]',
     },
   },
 };
@@ -136,28 +137,94 @@ export function Align({ blockId, enabled = true }: { blockId?: string; enabled?:
         anchorEl={ref.current}
         {...popoverProps}
       >
-        <div className={'flex h-[32px] items-center justify-center px-2'}>
-          <ActionButton
-            active={getAlign() === AlignType.Left}
-            tooltip={t('document.plugins.optionAction.left')}
-            onClick={toggleAlign(AlignType.Left)}
+        <div className="flex flex-col w-[200px] rounded-[12px]" style={{ padding: 'var(--spacing-spacing-m)' }}>
+          <Button
+            startIcon={<AlignLeftSvg className="h-5 w-5" />}
+            color="inherit"
+            onClick={() => {
+              toggleAlign(AlignType.Left)();
+              setOpen(false);
+            }}
+            disableRipple
+            sx={{
+              '.MuiButton-startIcon': {
+                margin: 0,
+                marginRight: 'var(--spacing-spacing-m)'
+              },
+              padding: '0 var(--spacing-spacing-m)',
+              height: '32px',
+              minHeight: '32px',
+              borderRadius: '8px',
+              justifyContent: 'flex-start',
+              textAlign: 'left',
+              '&:hover': {
+                backgroundColor: 'var(--fill-list-hover)'
+              },
+              ...(getAlign() === AlignType.Left && {
+                backgroundColor: 'var(--fill-list-active)'
+              })
+            }}
           >
-            <AlignLeftSvg className='h-5 w-5' />
-          </ActionButton>
-          <ActionButton
-            active={getAlign() === AlignType.Center}
-            tooltip={t('document.plugins.optionAction.center')}
-            onClick={toggleAlign(AlignType.Center)}
+            {t('document.plugins.optionAction.left')}
+          </Button>
+          <Button
+            startIcon={<AlignCenterSvg className="h-5 w-5" />}
+            color="inherit"
+            onClick={() => {
+              toggleAlign(AlignType.Center)();
+              setOpen(false);
+            }}
+            disableRipple
+            sx={{
+              '.MuiButton-startIcon': {
+                margin: 0,
+                marginRight: 'var(--spacing-spacing-m)'
+              },
+              padding: '0 var(--spacing-spacing-m)',
+              height: '32px',
+              minHeight: '32px',
+              borderRadius: '8px',
+              justifyContent: 'flex-start',
+              textAlign: 'left',
+              '&:hover': {
+                backgroundColor: 'var(--fill-list-hover)'
+              },
+              ...(getAlign() === AlignType.Center && {
+                backgroundColor: 'var(--fill-list-active)'
+              })
+            }}
           >
-            <AlignCenterSvg className='h-5 w-5' />
-          </ActionButton>
-          <ActionButton
-            active={getAlign() === AlignType.Right}
-            tooltip={t('document.plugins.optionAction.right')}
-            onClick={toggleAlign(AlignType.Right)}
+            {t('document.plugins.optionAction.center')}
+          </Button>
+          <Button
+            startIcon={<AlignRightSvg className="h-5 w-5" />}
+            color="inherit"
+            onClick={() => {
+              toggleAlign(AlignType.Right)();
+              setOpen(false);
+            }}
+            disableRipple
+            sx={{
+              '.MuiButton-startIcon': {
+                margin: 0,
+                marginRight: 'var(--spacing-spacing-m)'
+              },
+              padding: '0 var(--spacing-spacing-m)',
+              height: '32px',
+              minHeight: '32px',
+              borderRadius: '8px',
+              justifyContent: 'flex-start',
+              textAlign: 'left',
+              '&:hover': {
+                backgroundColor: 'var(--fill-list-hover)'
+              },
+              ...(getAlign() === AlignType.Right && {
+                backgroundColor: 'var(--fill-list-active)'
+              })
+            }}
           >
-            <AlignRightSvg className='h-5 w-5' />
-          </ActionButton>
+            {t('document.plugins.optionAction.right')}
+          </Button>
         </div>
       </Popover>
     </>
