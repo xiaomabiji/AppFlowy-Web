@@ -14,6 +14,7 @@ import { ReactComponent as Heading2 } from '@/assets/icons/h2.svg';
 import { ReactComponent as Heading3 } from '@/assets/icons/h3.svg';
 import { ReactComponent as DownArrow } from '@/assets/icons/triangle_down.svg';
 import Button from '@mui/material/Button';
+import { createHotkey, HOT_KEY_NAME } from '@/utils/hotkeys';
 
 const popoverProps: Partial<PopoverProps> = {
   anchorOrigin: {
@@ -36,6 +37,11 @@ export function Heading() {
   const { t } = useTranslation();
   const editor = useSlateStatic() as YjsEditor;
   const { visible: toolbarVisible } = useSelectionToolbarContext();
+  const [open, setOpen] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const ref = useRef<HTMLButtonElement | null>(null);
+  const buttonRefs = useRef<(HTMLButtonElement | null)[]>([]);
+
   const toHeading = useCallback(
     (level: number) => {
       return () => {
@@ -89,14 +95,54 @@ export function Heading() {
     return <Heading3 className='h-5 w-5' />;
   }, [isActivated]);
 
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLButtonElement | null>(null);
-
   useEffect(() => {
     if (!toolbarVisible) {
       setOpen(false);
     }
   }, [toolbarVisible]);
+
+  useEffect(() => {
+    if (!open) {
+      setSelectedIndex(-1);
+      return;
+    }
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (createHotkey(HOT_KEY_NAME.UP)(e) || createHotkey(HOT_KEY_NAME.DOWN)(e)) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (createHotkey(HOT_KEY_NAME.UP)(e)) {
+          setSelectedIndex(prev => (prev <= 0 ? 2 : prev - 1));
+        } else {
+          setSelectedIndex(prev => (prev >= 2 ? 0 : prev + 1));
+        }
+      } else if (createHotkey(HOT_KEY_NAME.ENTER)(e)) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (selectedIndex >= 0) {
+          toHeading(selectedIndex + 1)();
+          setOpen(false);
+        }
+      } else if (createHotkey(HOT_KEY_NAME.ESCAPE)(e)) {
+        e.preventDefault();
+        e.stopPropagation();
+        setOpen(false);
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown, true);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown, true);
+    };
+  }, [open, selectedIndex, toHeading]);
+
+  useEffect(() => {
+    if (selectedIndex >= 0 && buttonRefs.current[selectedIndex]) {
+      // 不再自动聚焦按钮
+      // buttonRefs.current[selectedIndex]?.focus();
+    }
+  }, [selectedIndex]);
 
   return (
     <div className={'flex items-center justify-center'}>
@@ -128,6 +174,7 @@ export function Heading() {
         >
           <div className="flex flex-col w-[200px] rounded-[12px]" style={{ padding: 'var(--spacing-spacing-m)' }}>
             <Button
+              ref={el => buttonRefs.current[0] = el}
               startIcon={<Heading1 className="h-5 w-5" />}
               color="inherit"
               onClick={() => {
@@ -152,12 +199,16 @@ export function Heading() {
                 },
                 ...(isActivated(1) && {
                   backgroundColor: 'var(--fill-list-active)'
+                }),
+                ...(selectedIndex === 0 && {
+                  backgroundColor: 'var(--fill-list-hover)'
                 })
               }}
             >
               {t('document.slashMenu.name.heading1')}
             </Button>
             <Button
+              ref={el => buttonRefs.current[1] = el}
               startIcon={<Heading2 className="h-5 w-5" />}
               color="inherit"
               onClick={() => {
@@ -182,12 +233,16 @@ export function Heading() {
                 },
                 ...(isActivated(2) && {
                   backgroundColor: 'var(--fill-list-active)'
+                }),
+                ...(selectedIndex === 1 && {
+                  backgroundColor: 'var(--fill-list-hover)'
                 })
               }}
             >
               {t('document.slashMenu.name.heading2')}
             </Button>
             <Button
+              ref={el => buttonRefs.current[2] = el}
               startIcon={<Heading3 className="h-5 w-5" />}
               color="inherit"
               onClick={() => {
@@ -212,6 +267,9 @@ export function Heading() {
                 },
                 ...(isActivated(3) && {
                   backgroundColor: 'var(--fill-list-active)'
+                }),
+                ...(selectedIndex === 2 && {
+                  backgroundColor: 'var(--fill-list-hover)'
                 })
               }}
             >
@@ -219,9 +277,8 @@ export function Heading() {
             </Button>
           </div>
         </Popover>
-      )
-      }
-    </div >
+      )}
+    </div>
   );
 }
 
