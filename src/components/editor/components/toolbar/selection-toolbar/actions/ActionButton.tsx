@@ -30,7 +30,7 @@ const ActionButton = forwardRef<
           active && 'bg-[var(--fill-theme-select)]'
         )}
       >
-        <div className="w-min-5 h-5 flex items-center justify-center">
+        <div className="min-w-5 h-5 flex items-center justify-center">
           {children}
         </div>
       </IconButton>
