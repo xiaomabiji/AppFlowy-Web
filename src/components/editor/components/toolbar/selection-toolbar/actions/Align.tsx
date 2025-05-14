@@ -14,6 +14,7 @@ import { useSlateStatic } from 'slate-react';
 import { Element } from 'slate';
 import ActionButton from './ActionButton';
 import Button from '@mui/material/Button';
+import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
 
 const popoverProps: Partial<PopoverProps> = {
   anchorOrigin: {
@@ -33,7 +34,6 @@ const popoverProps: Partial<PopoverProps> = {
 
 export function Align({ blockId, enabled = true }: { blockId?: string; enabled?: boolean }) {
   const [open, setOpen] = useState(false);
-
   const ref = useRef<HTMLButtonElement | null>(null);
   const { t } = useTranslation();
   const editor = useSlateStatic() as YjsEditor;
@@ -105,6 +105,16 @@ export function Align({ blockId, enabled = true }: { blockId?: string; enabled?:
     [getNode, editor, handleClose, rePosition]
   );
 
+  const { getButtonProps, selectedIndex } = useKeyboardNavigation({
+    itemCount: 3,
+    isOpen: open,
+    onSelect: (index) => {
+      const align = [AlignType.Left, AlignType.Center, AlignType.Right][index];
+      toggleAlign(align)();
+    },
+    onClose: handleClose
+  });
+
   useEffect(() => {
     if (!enabled) {
       setOpen(false);
@@ -139,6 +149,7 @@ export function Align({ blockId, enabled = true }: { blockId?: string; enabled?:
       >
         <div className="flex flex-col w-[200px] rounded-[12px]" style={{ padding: 'var(--spacing-spacing-m)' }}>
           <Button
+            {...getButtonProps(0)}
             startIcon={<AlignLeftSvg className="h-5 w-5" />}
             color="inherit"
             onClick={() => {
@@ -158,17 +169,18 @@ export function Align({ blockId, enabled = true }: { blockId?: string; enabled?:
               borderRadius: '8px',
               justifyContent: 'flex-start',
               textAlign: 'left',
-              '&:hover': {
-                backgroundColor: 'var(--fill-list-hover)'
-              },
               ...(getAlign() === AlignType.Left && {
                 backgroundColor: 'var(--fill-list-active)'
+              }),
+              ...(selectedIndex === 0 && {
+                backgroundColor: 'var(--fill-list-hover)'
               })
             }}
           >
             {t('document.plugins.optionAction.left')}
           </Button>
           <Button
+            {...getButtonProps(1)}
             startIcon={<AlignCenterSvg className="h-5 w-5" />}
             color="inherit"
             onClick={() => {
@@ -188,17 +200,18 @@ export function Align({ blockId, enabled = true }: { blockId?: string; enabled?:
               borderRadius: '8px',
               justifyContent: 'flex-start',
               textAlign: 'left',
-              '&:hover': {
-                backgroundColor: 'var(--fill-list-hover)'
-              },
               ...(getAlign() === AlignType.Center && {
                 backgroundColor: 'var(--fill-list-active)'
+              }),
+              ...(selectedIndex === 1 && {
+                backgroundColor: 'var(--fill-list-hover)'
               })
             }}
           >
             {t('document.plugins.optionAction.center')}
           </Button>
           <Button
+            {...getButtonProps(2)}
             startIcon={<AlignRightSvg className="h-5 w-5" />}
             color="inherit"
             onClick={() => {
@@ -218,11 +231,11 @@ export function Align({ blockId, enabled = true }: { blockId?: string; enabled?:
               borderRadius: '8px',
               justifyContent: 'flex-start',
               textAlign: 'left',
-              '&:hover': {
-                backgroundColor: 'var(--fill-list-hover)'
-              },
               ...(getAlign() === AlignType.Right && {
                 backgroundColor: 'var(--fill-list-active)'
+              }),
+              ...(selectedIndex === 2 && {
+                backgroundColor: 'var(--fill-list-hover)'
               })
             }}
           >
