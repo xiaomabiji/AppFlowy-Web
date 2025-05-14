@@ -100,8 +100,6 @@ export default defineConfig({
     port: process.env.PORT ? parseInt(process.env.PORT) : 3000,
     strictPort: true,
     host: '0.0.0.0',
-    // origin: 'http://*.appflowy.com',
-    origin: 'http://app-flowy-web.vercel.app',
     watch: {
       ignored: ['node_modules'],
     },
