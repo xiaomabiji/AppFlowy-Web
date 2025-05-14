@@ -1,7 +1,7 @@
 import { YjsEditorKey } from '@/application/types';
 import { applyYDoc } from '@/application/ydoc/apply';
 import * as Y from 'yjs';
-import { Db } from '../../db';
+import { Db } from '@/application/services/js-services/sync/db';
 
 describe('IndexedDB', () => {
   it('should consistently read client ID', async () => {

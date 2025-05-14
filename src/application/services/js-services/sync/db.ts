@@ -1,7 +1,6 @@
 import * as random from 'lib0/random'
 import * as idb from 'idb'
 import * as Y from 'yjs'
-import { update } from 'cypress/types/lodash'
 
 const log = console.log
 
