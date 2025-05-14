@@ -15,6 +15,7 @@ import NumberedList from '@/components/editor/components/toolbar/selection-toolb
 import Quote from '@/components/editor/components/toolbar/selection-toolbar/actions/Quote';
 import StrikeThrough from '@/components/editor/components/toolbar/selection-toolbar/actions/StrikeThrough';
 import Underline from '@/components/editor/components/toolbar/selection-toolbar/actions/Underline';
+import TurnInto from '@/components/editor/components/toolbar/selection-toolbar/actions/TurnInto';
 import {
   useSelectionToolbarContext,
 } from '@/components/editor/components/toolbar/selection-toolbar/SelectionToolbar.hooks';
@@ -35,29 +36,29 @@ function ToolbarActions() {
   const end = useMemo(() => selection ? editor.end(selection) : null, [editor, selection]);
 
   const startBlock = useMemo(() => {
-    if(!start) return null;
+    if (!start) return null;
     try {
       return getBlockEntry(editor, start);
-    } catch(e) {
+    } catch (e) {
       return null;
     }
   }, [editor, start]);
   const endBlock = useMemo(() => {
-    if(!end) return null;
+    if (!end) return null;
     try {
       return getBlockEntry(editor, end);
-    } catch(e) {
+    } catch (e) {
       return null;
     }
   }, [editor, end]);
 
   const isAcrossBlock = useMemo(() => {
-    if(startBlock && endBlock && Path.equals(startBlock[1], endBlock[1])) return false;
+    if (startBlock && endBlock && Path.equals(startBlock[1], endBlock[1])) return false;
     return startBlock?.[0].blockId !== endBlock?.[0].blockId;
   }, [endBlock, startBlock]);
 
   const isCodeBlock = useMemo(() => {
-    if(!start || !end) return false;
+    if (!start || !end) return false;
     const range = { anchor: start, focus: end };
 
     const [codeBlock] = editor.nodes({
@@ -72,38 +73,36 @@ function ToolbarActions() {
     <div
       className={'flex w-fit flex-grow items-center gap-1'}
     >
-      {!isCodeBlock && <AIAssistant />}
+      {!isCodeBlock && <>
+        <AIAssistant />
+        <Divider
+          className={'my-1.5 bg--border-primary'}
+          orientation={'vertical'}
+          flexItem={true}
+        />
+      </>}
       {
         !isAcrossBlock && !isCodeBlock && <>
-          <Paragraph />
           <Heading />
-          <Divider
-            className={'my-1.5 bg-line-on-toolbar'}
-            orientation={'vertical'}
-            flexItem={true}
-          />
+          <Bold />
+          <Underline />
+          <Italic />
+          <Color />
+          {/* <StrikeThrough /> */}
         </>
       }
-      <>
-        <Underline />
-        <Bold />
-        <Italic />
-        <StrikeThrough />
-      </>
-      {!isCodeBlock && <InlineCode />}
-      {!isCodeBlock && !isAcrossBlock && <Formula />}
+      {/* {!isCodeBlock && <InlineCode />} */}
+      {/* {!isCodeBlock && !isAcrossBlock && <Formula />} */}
       {
         !isAcrossBlock && !isCodeBlock && <>
           <Divider
-            className={'my-1.5 bg-line-on-toolbar'}
+            className={'my-1.5 bg--border-primary'}
             orientation={'vertical'}
             flexItem={true}
           />
-          <Quote />
-          <BulletedList />
-          <NumberedList />
+          <TurnInto />
           <Divider
-            className={'my-1.5 bg-line-on-toolbar'}
+            className={'my-1.5 bg--border-primary'}
             orientation={'vertical'}
             flexItem={true}
           />
@@ -111,7 +110,6 @@ function ToolbarActions() {
         </>
       }
       {!isCodeBlock && <Align enabled={toolbarVisible} />}
-      <Color />
     </div>
   );
 }
