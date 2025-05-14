@@ -15,6 +15,7 @@ import { ReactComponent as Heading3 } from '@/assets/icons/h3.svg';
 import { ReactComponent as DownArrow } from '@/assets/icons/triangle_down.svg';
 import Button from '@mui/material/Button';
 import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
+import { ReactComponent as ParagraphSvg } from '@/assets/icons/text.svg';
 
 const popoverProps: Partial<PopoverProps> = {
   anchorOrigin: {
@@ -77,7 +78,30 @@ export function Heading() {
     [editor]
   );
 
+  const isParagraph = useCallback(() => {
+    try {
+      const [node] = getBlockEntry(editor);
+      return node && node.type === BlockType.Paragraph;
+    } catch (e) {
+      return false;
+    }
+  }, [editor]);
+
+  const toParagraph = useCallback(() => {
+    try {
+      const [node] = getBlockEntry(editor);
+      if (!node) return;
+      CustomEditor.turnToBlock(editor, node.blockId as string, BlockType.Paragraph, {});
+    } catch (e) {
+      return;
+    }
+  }, [editor]);
+
   const getActiveButton = useCallback(() => {
+    if (isParagraph()) {
+      return <ParagraphSvg className={'h-5 w-5 text-fill-default'} />;
+    }
+
     if (isActivated(1)) {
       return <Heading1 className={'h-5 w-5 text-fill-default'} />;
     }
@@ -90,14 +114,18 @@ export function Heading() {
       return <Heading3 className={'h-5 w-5 text-fill-default'} />;
     }
 
-    return <Heading3 className='h-5 w-5' />;
-  }, [isActivated]);
+    return <ParagraphSvg className='h-5 w-5' />;
+  }, [isActivated, isParagraph]);
 
   const { getButtonProps, selectedIndex } = useKeyboardNavigation({
-    itemCount: 3,
+    itemCount: 4,
     isOpen: open,
     onSelect: (index) => {
-      toHeading(index + 1)();
+      if (index === 0) {
+        toParagraph();
+      } else {
+        toHeading(index)();
+      }
     },
     onClose: () => {
       setOpen(false);
@@ -119,7 +147,7 @@ export function Heading() {
           e.stopPropagation();
           setOpen(true);
         }}
-        tooltip={'Heading'}
+        tooltip={t('editor.text')}
       >
         <div className={'flex items-center justify-center gap-1'}>
           {getActiveButton()}
@@ -141,6 +169,37 @@ export function Heading() {
           <div className="flex flex-col w-[200px] rounded-[12px]" style={{ padding: 'var(--spacing-spacing-m)' }}>
             <Button
               {...getButtonProps(0)}
+              startIcon={<ParagraphSvg className="h-5 w-5" />}
+              color="inherit"
+              onClick={() => {
+                toParagraph();
+                setOpen(false);
+              }}
+              disableRipple
+              className="text-foreground"
+              sx={{
+                '.MuiButton-startIcon': {
+                  margin: 0,
+                  marginRight: 'var(--spacing-spacing-m)'
+                },
+                padding: '0 var(--spacing-spacing-m)',
+                height: '32px',
+                minHeight: '32px',
+                borderRadius: '8px',
+                justifyContent: 'flex-start',
+                textAlign: 'left',
+                ...(isParagraph() && {
+                  backgroundColor: 'var(--fill-list-active)'
+                }),
+                ...(selectedIndex === 0 && {
+                  backgroundColor: 'var(--fill-list-hover)'
+                })
+              }}
+            >
+              {t('editor.text')}
+            </Button>
+            <Button
+              {...getButtonProps(1)}
               startIcon={<Heading1 className="h-5 w-5" />}
               color="inherit"
               onClick={() => {
@@ -163,7 +222,7 @@ export function Heading() {
                 ...(isActivated(1) && {
                   backgroundColor: 'var(--fill-list-active)'
                 }),
-                ...(selectedIndex === 0 && {
+                ...(selectedIndex === 1 && {
                   backgroundColor: 'var(--fill-list-hover)'
                 })
               }}
@@ -171,7 +230,7 @@ export function Heading() {
               {t('document.slashMenu.name.heading1')}
             </Button>
             <Button
-              {...getButtonProps(1)}
+              {...getButtonProps(2)}
               startIcon={<Heading2 className="h-5 w-5" />}
               color="inherit"
               onClick={() => {
@@ -194,7 +253,7 @@ export function Heading() {
                 ...(isActivated(2) && {
                   backgroundColor: 'var(--fill-list-active)'
                 }),
-                ...(selectedIndex === 1 && {
+                ...(selectedIndex === 2 && {
                   backgroundColor: 'var(--fill-list-hover)'
                 })
               }}
@@ -202,7 +261,7 @@ export function Heading() {
               {t('document.slashMenu.name.heading2')}
             </Button>
             <Button
-              {...getButtonProps(2)}
+              {...getButtonProps(3)}
               startIcon={<Heading3 className="h-5 w-5" />}
               color="inherit"
               onClick={() => {
@@ -225,7 +284,7 @@ export function Heading() {
                 ...(isActivated(3) && {
                   backgroundColor: 'var(--fill-list-active)'
                 }),
-                ...(selectedIndex === 2 && {
+                ...(selectedIndex === 3 && {
                   backgroundColor: 'var(--fill-list-hover)'
                 })
               }}
