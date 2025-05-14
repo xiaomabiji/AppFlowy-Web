@@ -152,20 +152,7 @@ function HrefPopover({
 
             setUrlValid(true);
           }}
-          size={'small'} fullWidth={true} placeholder={t('toolbar.addLink')} className="text-primary" sx={{
-            '& .MuiOutlinedInput-input': {
-              color: 'var(--text-primary)',
-            },
-            '& .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'var(--line-divider)',
-            },
-            '&:hover .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'var(--line-divider)',
-            },
-            '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'var(--line-divider)',
-            },
-          }} />
+          size={'small'} fullWidth={true} placeholder={t('toolbar.addLink')} />
         {urlValid ? null : (
           <div className={'text-function-error text-xs'}>
             {t('editor.incorrectLink')}
@@ -236,21 +223,6 @@ function HrefPopover({
             size={'small'}
             fullWidth={true}
             placeholder={t('toolbar.addLink')}
-            className="text-primary"
-            sx={{
-              '& .MuiOutlinedInput-input': {
-                color: 'var(--text-primary)',
-              },
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'var(--line-divider)',
-              },
-              '&:hover .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'var(--line-divider)',
-              },
-              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'var(--line-divider)',
-              },
-            }}
           />
           {urlValid ? null : (
             <div className={'text-function-error text-xs'}>
@@ -280,21 +252,7 @@ function HrefPopover({
               }
             }}
             size={'small'}
-            fullWidth={true} placeholder={t('toolbar.addLink')} className="text-primary" sx={{
-              '& .MuiOutlinedInput-input': {
-                color: 'var(--text-primary)',
-              },
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'var(--line-divider)',
-              },
-              '&:hover .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'var(--line-divider)',
-              },
-              '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'var(--line-divider)',
-              },
-            }}
-          />
+            fullWidth={true} placeholder={t('toolbar.addLink')} />
         </div>
         <Divider />
         <Button
@@ -339,7 +297,7 @@ function HrefPopover({
       transformOrigin={defaultOrigin}
       slotProps={{
         paper: {
-          className: 'p-4 min-w-[360px] bg-[var(--surface-primary)]',
+          className: 'p-4 min-w-[360px]',
           ref: paperRef,
         },
       }}
