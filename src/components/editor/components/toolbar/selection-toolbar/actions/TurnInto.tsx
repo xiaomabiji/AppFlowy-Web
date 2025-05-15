@@ -18,10 +18,14 @@ import { ReactComponent as ParagraphSvg } from '@/assets/icons/text.svg';
 import { ReactComponent as Heading1 } from '@/assets/icons/h1.svg';
 import { ReactComponent as Heading2 } from '@/assets/icons/h2.svg';
 import { ReactComponent as Heading3 } from '@/assets/icons/h3.svg';
+import { ReactComponent as ToggleListIcon } from '@/assets/icons/toggle_list.svg';
+import { ReactComponent as ToggleHeading1Icon } from '@/assets/icons/toggle_h1.svg';
+import { ReactComponent as ToggleHeading2Icon } from '@/assets/icons/toggle_h2.svg';
+import { ReactComponent as ToggleHeading3Icon } from '@/assets/icons/toggle_h3.svg';
 import type { HeadingBlockData } from '@/application/types';
 
 type BlockOption = {
-    type: 'paragraph' | 'heading1' | 'heading2' | 'heading3' | 'quote' | 'bulleted' | 'numbered';
+    type: 'paragraph' | 'heading1' | 'heading2' | 'heading3' | 'quote' | 'bulleted' | 'numbered' | 'toggleHeading1' | 'toggleHeading2' | 'toggleHeading3' | 'toggle';
     icon: React.FC<React.SVGProps<SVGSVGElement>>;
     label: string;
     blockType: BlockType;
@@ -57,6 +61,33 @@ const blockOptions: BlockOption[] = [
         data: { level: 3 },
     },
     {
+        type: 'toggle',
+        icon: ToggleListIcon,
+        label: 'document.slashMenu.name.toggleList',
+        blockType: BlockType.ToggleListBlock,
+    },
+    {
+        type: 'toggleHeading1',
+        icon: ToggleHeading1Icon,
+        label: 'document.slashMenu.name.toggleHeading1',
+        blockType: BlockType.ToggleListBlock,
+        data: { level: 1 },
+    },
+    {
+        type: 'toggleHeading2',
+        icon: ToggleHeading2Icon,
+        label: 'document.slashMenu.name.toggleHeading2',
+        blockType: BlockType.ToggleListBlock,
+        data: { level: 2 },
+    },
+    {
+        type: 'toggleHeading3',
+        icon: ToggleHeading3Icon,
+        label: 'document.slashMenu.name.toggleHeading3',
+        blockType: BlockType.ToggleListBlock,
+        data: { level: 3 },
+    },
+    {
         type: 'quote',
         icon: QuoteSvg,
         label: 'toolbar.quote',
@@ -71,7 +102,7 @@ const blockOptions: BlockOption[] = [
     {
         type: 'numbered',
         icon: NumberedListSvg,
-        label: 'toolbar.numberedList',
+        label: 'editor.numberedList',
         blockType: BlockType.NumberedListBlock,
     },
 ];
@@ -178,7 +209,7 @@ function TurnInfo() {
                     style: { marginTop: '6px', minWidth: 200, paddingLeft: 'var(--spacing-spacing-m)', paddingRight: 'var(--spacing-spacing-m)' }
                 }}
             >
-                {/* Group label: Text */}
+                {/* Group label: Turn into */}
                 <Typography
                     className='text-text-secondary'
                     variant="body2"
@@ -192,7 +223,7 @@ function TurnInfo() {
                         userSelect: 'none',
                     }}
                 >
-                    {t('toolbar.suggestion', { defaultValue: 'Suggestion' })}
+                    {t('document.plugins.optionAction.turnInto', { defaultValue: 'Turn into' })}
                 </Typography>
                 {blockOptions.map((option, index) => (
                     <MenuItem
