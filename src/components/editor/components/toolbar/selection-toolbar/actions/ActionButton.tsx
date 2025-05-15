@@ -26,7 +26,7 @@ const ActionButton = forwardRef<
         {...props}
         className={cn(
           className,
-          'bg-transparent px-1.5 py-1.5 text-icon-primary hover:bg-[var(--fill-content-hover)] hover:text-fill-default',
+          'bg-transparent px-1.5 py-1.5 text-icon-primary hover:bg-[var(--fill-content-hover)]',
           active && 'bg-[var(--fill-theme-select)]'
         )}
       >

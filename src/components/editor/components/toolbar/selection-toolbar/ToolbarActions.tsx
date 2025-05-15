@@ -99,7 +99,7 @@ function ToolbarActions() {
           {/* <StrikeThrough /> */}
         </>
       }
-      {/* {!isCodeBlock && <InlineCode />} */}
+      {!isCodeBlock && <InlineCode />}
       {/* {!isCodeBlock && !isAcrossBlock && <Formula />} */}
       {
         !isAcrossBlock && !isCodeBlock && <>

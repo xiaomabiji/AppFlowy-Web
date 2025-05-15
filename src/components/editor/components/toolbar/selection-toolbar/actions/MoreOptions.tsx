@@ -11,6 +11,7 @@ import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
 import { CustomEditor } from '@/application/slate-yjs/command';
 import { EditorMarkFormat } from '@/application/slate-yjs/types';
 import { Transforms, Text, Editor } from 'slate';
+import { PopoverProps } from '@mui/material/Popover';
 
 const options = [
     {
@@ -67,6 +68,23 @@ const options = [
     },
 ];
 
+const popoverProps: Partial<PopoverProps> = {
+    anchorOrigin: {
+        vertical: 'bottom',
+        horizontal: 'center',
+    },
+    transformOrigin: {
+        vertical: 'top',
+        horizontal: 'center',
+    },
+    slotProps: {
+        paper: {
+            className: 'bg-[var(--surface-primary)] rounded-[8px]',
+            style: { marginTop: '6px' }
+        },
+    },
+};
+
 export default function MoreOptions() {
     const [open, setOpen] = React.useState(false);
     const ref = React.useRef<HTMLButtonElement | null>(null);
@@ -100,8 +118,7 @@ export default function MoreOptions() {
                 onClose={() => setOpen(false)}
                 open={open}
                 anchorEl={ref.current}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
-                transformOrigin={{ vertical: 'top', horizontal: 'center' }}
+                {...popoverProps}
             >
                 <div className="flex flex-col w-[200px] rounded-[12px]" style={{ padding: 'var(--spacing-spacing-m)' }}>
                     {options.map((opt, idx) => (

@@ -16,6 +16,8 @@ import { ReactComponent as DownArrow } from '@/assets/icons/triangle_down.svg';
 import Button from '@mui/material/Button';
 import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
 import { ReactComponent as ParagraphSvg } from '@/assets/icons/text.svg';
+import { ReactComponent as TickIcon } from '@/assets/icons/tick.svg';
+import { ReactComponent as TextFormatSvg } from '@/assets/icons/text_format.svg';
 
 const popoverProps: Partial<PopoverProps> = {
   anchorOrigin: {
@@ -126,19 +128,19 @@ export function Heading() {
 
   const getActiveButton = useCallback(() => {
     if (isParagraph()) {
-      return <ParagraphSvg className={'h-5 w-5 text-fill-default'} />;
+      return <ParagraphSvg className={'h-5 w-5'} />;
     }
 
     if (isActivated(1)) {
-      return <Heading1 className={'h-5 w-5 text-fill-default'} />;
+      return <Heading1 className={'h-5 w-5'} />;
     }
 
     if (isActivated(2)) {
-      return <Heading2 className={'h-5 w-5 text-fill-default'} />;
+      return <Heading2 className={'h-5 w-5'} />;
     }
 
     if (isActivated(3)) {
-      return <Heading3 className={'h-5 w-5 text-fill-default'} />;
+      return <Heading3 className={'h-5 w-5'} />;
     }
 
     return <ParagraphSvg className='h-5 w-5' />;
@@ -167,6 +169,7 @@ export function Heading() {
 
   return (
     <div className={'flex items-center justify-center'}>
+
       <ActionButton
         ref={ref}
         onClick={(e) => {
@@ -177,7 +180,7 @@ export function Heading() {
         tooltip={t('editor.text')}
       >
         <div className={'flex items-center justify-center gap-1'}>
-          {getActiveButton()}
+          <TextFormatSvg className='h-5 w-5' />
           <DownArrow className={'h-5 w-3 text-icon-primary'} />
         </div>
       </ActionButton>
@@ -218,15 +221,17 @@ export function Heading() {
                   fontStyle: 'normal',
                   fontWeight: 400,
                   lineHeight: '20px',
-                  ...(opt.isActive(isParagraph, isActivated) && {
-                    backgroundColor: 'var(--fill-list-active)'
-                  }),
                   ...(selectedIndex === idx && {
                     backgroundColor: 'var(--fill-list-hover)'
                   })
                 }}
               >
                 {String(t(opt.labelKey as any))}
+                {opt.isActive(isParagraph, isActivated) && (
+                  <span className="ml-auto flex items-center">
+                    <TickIcon className="h-5 w-5 text-icon-primary" />
+                  </span>
+                )}
               </Button>
             ))}
           </div>

@@ -320,8 +320,10 @@ function TurnInfo() {
                                 }}
                                 onClick={() => handleBlockChange(option)}
                             >
-                                <option.icon className="h-5 w-5 mr-2" />
-                                {t(option.label, { defaultValue: option.label })}
+                                <option.icon className="h-5 w-5 mr-2 text-text-primary" />
+                                <span className="text-text-primary">
+                                    {t(option.label, { defaultValue: option.label })}
+                                </span>
                                 {isOptionActive(option, currentType, currentLevel) && (
                                     <span className="ml-auto flex items-center">
                                         <TickIcon className="h-5 w-5 text-icon-primary" />
@@ -368,8 +370,10 @@ function TurnInfo() {
                         }}
                         onClick={() => handleBlockChange(option)}
                     >
-                        <option.icon className="h-5 w-5 mr-2" />
-                        {t(option.label, { defaultValue: option.label })}
+                        <option.icon className="h-5 w-5 mr-2 text-text-primary" />
+                        <span className="text-text-primary">
+                            {t(option.label, { defaultValue: option.label })}
+                        </span>
                         {isOptionActive(option, currentType, currentLevel) && (
                             <span className="ml-auto flex items-center">
                                 <TickIcon className="h-5 w-5 text-icon-primary" />
