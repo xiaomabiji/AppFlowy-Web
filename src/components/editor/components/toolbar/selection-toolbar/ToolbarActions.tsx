@@ -24,6 +24,14 @@ import { Editor, Element, Path } from 'slate';
 import Paragraph from './actions/Paragraph';
 import React, { useMemo } from 'react';
 import { useSlate } from 'slate-react';
+import { ReactComponent as MoreIcon } from '@/assets/icons/more.svg';
+import Popover from '@/components/_shared/popover/Popover';
+import { useTranslation } from 'react-i18next';
+import ActionButton from './actions/ActionButton';
+import { ReactComponent as StrikeThroughSvg } from '@/assets/icons/strikethrough.svg';
+import { ReactComponent as FormulaSvg } from '@/assets/icons/formula.svg';
+import { Button } from '@mui/material';
+import MoreOptions from './actions/MoreOptions';
 
 function ToolbarActions() {
   const editor = useSlate() as YjsEditor;
@@ -110,6 +118,7 @@ function ToolbarActions() {
         </>
       }
       {!isCodeBlock && <Align enabled={toolbarVisible} />}
+      {!isCodeBlock && <MoreOptions />}
     </div>
   );
 }
