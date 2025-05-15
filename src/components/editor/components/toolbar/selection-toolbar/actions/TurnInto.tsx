@@ -14,10 +14,71 @@ import { getBlockEntry } from '@/application/slate-yjs/utils/editor';
 import { BlockType } from '@/application/types';
 import { useSelectionToolbarContext } from '../SelectionToolbar.hooks';
 import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
+import { ReactComponent as ParagraphSvg } from '@/assets/icons/text.svg';
+import { ReactComponent as Heading1 } from '@/assets/icons/h1.svg';
+import { ReactComponent as Heading2 } from '@/assets/icons/h2.svg';
+import { ReactComponent as Heading3 } from '@/assets/icons/h3.svg';
+import type { HeadingBlockData } from '@/application/types';
+
+type BlockOption = {
+    type: 'paragraph' | 'heading1' | 'heading2' | 'heading3' | 'quote' | 'bulleted' | 'numbered';
+    icon: React.FC<React.SVGProps<SVGSVGElement>>;
+    label: string;
+    blockType: BlockType;
+    data?: any;
+};
+
+const blockOptions: BlockOption[] = [
+    {
+        type: 'paragraph',
+        icon: ParagraphSvg,
+        label: 'editor.text',
+        blockType: BlockType.Paragraph,
+    },
+    {
+        type: 'heading1',
+        icon: Heading1,
+        label: 'document.slashMenu.name.heading1',
+        blockType: BlockType.HeadingBlock,
+        data: { level: 1 },
+    },
+    {
+        type: 'heading2',
+        icon: Heading2,
+        label: 'document.slashMenu.name.heading2',
+        blockType: BlockType.HeadingBlock,
+        data: { level: 2 },
+    },
+    {
+        type: 'heading3',
+        icon: Heading3,
+        label: 'document.slashMenu.name.heading3',
+        blockType: BlockType.HeadingBlock,
+        data: { level: 3 },
+    },
+    {
+        type: 'quote',
+        icon: QuoteSvg,
+        label: 'toolbar.quote',
+        blockType: BlockType.QuoteBlock,
+    },
+    {
+        type: 'bulleted',
+        icon: BulletedListSvg,
+        label: 'toolbar.bulletList',
+        blockType: BlockType.BulletedListBlock,
+    },
+    {
+        type: 'numbered',
+        icon: NumberedListSvg,
+        label: 'toolbar.numberedList',
+        blockType: BlockType.NumberedListBlock,
+    },
+];
 
 function TurnInfo() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [selectedType, setSelectedType] = useState<'quote' | 'bulleted' | 'numbered' | null>(null);
+    const [selectedType, setSelectedType] = useState<BlockOption['type'] | null>(null);
     const ref = useRef<HTMLButtonElement | null>(null);
     const editor = useSlateStatic() as YjsEditor;
     const selectedText = CustomEditor.getSelectionContent(editor)?.trim() || '';
@@ -29,62 +90,53 @@ function TurnInfo() {
         forceShow(false);
     };
 
-    let displayText = 'Text';
-    if (selectedType === 'quote') displayText = String(t('toolbar.quote', { returnObjects: false, defaultValue: 'Quote' }));
-    if (selectedType === 'bulleted') displayText = String(t('toolbar.bulletList', { returnObjects: false, defaultValue: 'Bulleted List' }));
-    if (selectedType === 'numbered') displayText = String(t('toolbar.numberedList', { returnObjects: false, defaultValue: 'Numbered List' }));
+    // Helper: get current block type and heading level
+    let currentType: string | null = null;
+    let currentLevel: number | null = null;
+    try {
+        const [node] = getBlockEntry(editor);
+        if (node.type === BlockType.Paragraph) currentType = 'paragraph';
+        else if (node.type === BlockType.HeadingBlock) {
+            currentType = 'heading';
+            currentLevel = (node.data as HeadingBlockData).level;
+        } else if (node.type === BlockType.QuoteBlock) currentType = 'quote';
+        else if (node.type === BlockType.BulletedListBlock) currentType = 'bulleted';
+        else if (node.type === BlockType.NumberedListBlock) currentType = 'numbered';
+    } catch (e) { }
+
+    const getDisplayText = () => {
+        if (currentType === 'paragraph') return t('editor.text', { defaultValue: 'Text' });
+        if (currentType === 'heading' && currentLevel) {
+            return t(`document.slashMenu.name.heading${currentLevel}`, { defaultValue: `Heading ${currentLevel}` });
+        }
+        if (currentType === 'quote') return t('toolbar.quote', { returnObjects: false, defaultValue: 'Quote' });
+        if (currentType === 'bulleted') return t('toolbar.bulletList', { returnObjects: false, defaultValue: 'Bulleted List' });
+        if (currentType === 'numbered') return t('toolbar.numberedList', { returnObjects: false, defaultValue: 'Numbered List' });
+
+        const option = blockOptions.find(opt => opt.type === selectedType);
+        return option ? t(option.label, { defaultValue: option.label }) : 'Text';
+    };
+
+    const handleBlockChange = (option: BlockOption) => {
+        try {
+            const [node] = getBlockEntry(editor);
+            if (!node) return;
+
+            if (node.type === option.blockType &&
+                (!option.data || (node.type === BlockType.HeadingBlock && (node.data as HeadingBlockData).level === option.data.level))) {
+                CustomEditor.turnToBlock(editor, node.blockId as string, BlockType.Paragraph, {});
+            } else {
+                CustomEditor.turnToBlock(editor, node.blockId as string, option.blockType, option.data || {});
+            }
+            setSelectedType(option.type);
+            handleClose();
+        } catch (e) { handleClose(); }
+    };
 
     const { getButtonProps, selectedIndex } = useKeyboardNavigation({
-        itemCount: 3,
+        itemCount: blockOptions.length,
         isOpen: open,
-        onSelect: (index) => {
-            if (index === 0) {
-                // Quote
-                try {
-                    const [node] = getBlockEntry(editor);
-                    if (!node) return;
-                    if (node.type === BlockType.QuoteBlock) {
-                        CustomEditor.turnToBlock(editor, node.blockId as string, BlockType.Paragraph, {});
-                    } else {
-                        CustomEditor.turnToBlock(editor, node.blockId as string, BlockType.QuoteBlock, {});
-                    }
-                    setSelectedType('quote');
-                    handleClose();
-                } catch (e) {
-                    handleClose();
-                }
-            } else if (index === 1) {
-                // Bulleted List
-                try {
-                    const [node] = getBlockEntry(editor);
-                    if (!node) return;
-                    if (node.type === BlockType.BulletedListBlock) {
-                        CustomEditor.turnToBlock(editor, node.blockId as string, BlockType.Paragraph, {});
-                    } else {
-                        CustomEditor.turnToBlock(editor, node.blockId as string, BlockType.BulletedListBlock, {});
-                    }
-                    setSelectedType('bulleted');
-                    handleClose();
-                } catch (e) {
-                    handleClose();
-                }
-            } else if (index === 2) {
-                // Numbered List
-                try {
-                    const [node] = getBlockEntry(editor);
-                    if (!node) return;
-                    if (node.type === BlockType.NumberedListBlock) {
-                        CustomEditor.turnToBlock(editor, node.blockId as string, BlockType.Paragraph, {});
-                    } else {
-                        CustomEditor.turnToBlock(editor, node.blockId as string, BlockType.NumberedListBlock, {});
-                    }
-                    setSelectedType('numbered');
-                    handleClose();
-                } catch (e) {
-                    handleClose();
-                }
-            }
-        },
+        onSelect: (index) => handleBlockChange(blockOptions[index]),
         onClose: handleClose,
     });
 
@@ -98,7 +150,7 @@ function TurnInfo() {
                     setAnchorEl(e.currentTarget);
                     forceShow(true);
                 }}
-                tooltip={displayText}
+                tooltip={getDisplayText()}
             >
                 <div className={'flex items-center justify-center gap-1 '}>
                     <span
@@ -110,7 +162,7 @@ function TurnInfo() {
                             lineHeight: '20px',
                         }}
                     >
-                        {displayText}
+                        {getDisplayText()}
                     </span>
                     <DownArrow className={'h-5 w-3 text-icon-primary'} />
                 </div>
@@ -123,39 +175,14 @@ function TurnInfo() {
                 transformOrigin={{ vertical: 'top', horizontal: 'left' }}
                 PaperProps={{
                     className: 'bg-[var(--surface-primary)] rounded-[8px]',
-                    style: { marginTop: '6px', minWidth: 200, padding: 'var(--spacing-spacing-m)' }
+                    style: { marginTop: '6px', minWidth: 200, paddingLeft: 'var(--spacing-spacing-m)', paddingRight: 'var(--spacing-spacing-m)' }
                 }}
             >
-                {/* Group 1: Quote */}
-                <MenuItem
-                    ref={el => getButtonProps(0).ref?.(el as any)}
-                    selected={selectedIndex === 0}
-                    sx={getButtonProps(0).sx}
-                    onClick={() => {
-                        try {
-                            const [node] = getBlockEntry(editor);
-                            if (!node) return;
-                            if (node.type === BlockType.QuoteBlock) {
-                                CustomEditor.turnToBlock(editor, node.blockId as string, BlockType.Paragraph, {});
-                            } else {
-                                CustomEditor.turnToBlock(editor, node.blockId as string, BlockType.QuoteBlock, {});
-                            }
-                            setSelectedType('quote');
-                            handleClose();
-                        } catch (e) {
-                            handleClose();
-                        }
-                    }}
-                >
-                    <QuoteSvg className="h-5 w-5 mr-2" />
-                    {String(t('toolbar.quote', { returnObjects: false, defaultValue: 'Quote' }))}
-                </MenuItem>
-                {/* Group label */}
+                {/* Group label: Text */}
                 <Typography
+                    className='text-text-secondary'
                     variant="body2"
                     sx={{
-                        color: 'var(--Text-primary, #21232A)',
-                        fontFamily: 'SF Pro Text',
                         fontSize: 12,
                         fontWeight: 600,
                         lineHeight: '20px',
@@ -165,55 +192,20 @@ function TurnInfo() {
                         userSelect: 'none',
                     }}
                 >
-                    {t('toolbar.listGroup', { defaultValue: 'List' })}
+                    {t('toolbar.suggestion', { defaultValue: 'Suggestion' })}
                 </Typography>
-                {/* Group 2: Bulleted List & Numbered List */}
-                <MenuItem
-                    ref={el => getButtonProps(1).ref?.(el as any)}
-                    selected={selectedIndex === 1}
-                    sx={getButtonProps(1).sx}
-                    onClick={() => {
-                        try {
-                            const [node] = getBlockEntry(editor);
-                            if (!node) return;
-                            if (node.type === BlockType.BulletedListBlock) {
-                                CustomEditor.turnToBlock(editor, node.blockId as string, BlockType.Paragraph, {});
-                            } else {
-                                CustomEditor.turnToBlock(editor, node.blockId as string, BlockType.BulletedListBlock, {});
-                            }
-                            setSelectedType('bulleted');
-                            handleClose();
-                        } catch (e) {
-                            handleClose();
-                        }
-                    }}
-                >
-                    <BulletedListSvg className="h-5 w-5 mr-2" />
-                    {String(t('toolbar.bulletList', { returnObjects: false, defaultValue: 'Bulleted List' }))}
-                </MenuItem>
-                <MenuItem
-                    ref={el => getButtonProps(2).ref?.(el as any)}
-                    selected={selectedIndex === 2}
-                    sx={getButtonProps(2).sx}
-                    onClick={() => {
-                        try {
-                            const [node] = getBlockEntry(editor);
-                            if (!node) return;
-                            if (node.type === BlockType.NumberedListBlock) {
-                                CustomEditor.turnToBlock(editor, node.blockId as string, BlockType.Paragraph, {});
-                            } else {
-                                CustomEditor.turnToBlock(editor, node.blockId as string, BlockType.NumberedListBlock, {});
-                            }
-                            setSelectedType('numbered');
-                            handleClose();
-                        } catch (e) {
-                            handleClose();
-                        }
-                    }}
-                >
-                    <NumberedListSvg className="h-5 w-5 mr-2" />
-                    {String(t('toolbar.numberedList', { returnObjects: false, defaultValue: 'Numbered List' }))}
-                </MenuItem>
+                {blockOptions.map((option, index) => (
+                    <MenuItem
+                        key={option.type}
+                        ref={el => getButtonProps(index).ref?.(el as any)}
+                        selected={selectedIndex === index}
+                        sx={getButtonProps(index).sx}
+                        onClick={() => handleBlockChange(option)}
+                    >
+                        <option.icon className="h-5 w-5 mr-2" />
+                        {t(option.label, { defaultValue: option.label })}
+                    </MenuItem>
+                ))}
             </Menu>
         </div>
     );
