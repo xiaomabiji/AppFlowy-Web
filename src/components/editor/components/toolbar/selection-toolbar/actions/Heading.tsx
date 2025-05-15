@@ -34,6 +34,33 @@ const popoverProps: Partial<PopoverProps> = {
   },
 };
 
+const headingOptions = [
+  {
+    icon: <ParagraphSvg className="h-5 w-5" />,
+    labelKey: 'editor.text',
+    isActive: (isParagraph: () => boolean, isActivated: (level: number) => boolean) => isParagraph(),
+    onClick: (toParagraph: () => void, toHeading: (level: number) => () => void, setOpen: (v: boolean) => void) => () => { toParagraph(); setOpen(false); },
+  },
+  {
+    icon: <Heading1 className="h-5 w-5" />,
+    labelKey: 'document.slashMenu.name.heading1',
+    isActive: (isParagraph: () => boolean, isActivated: (level: number) => boolean) => isActivated(1),
+    onClick: (toParagraph: () => void, toHeading: (level: number) => () => void, setOpen: (v: boolean) => void) => () => { toHeading(1)(); setOpen(false); },
+  },
+  {
+    icon: <Heading2 className="h-5 w-5" />,
+    labelKey: 'document.slashMenu.name.heading2',
+    isActive: (isParagraph: () => boolean, isActivated: (level: number) => boolean) => isActivated(2),
+    onClick: (toParagraph: () => void, toHeading: (level: number) => () => void, setOpen: (v: boolean) => void) => () => { toHeading(2)(); setOpen(false); },
+  },
+  {
+    icon: <Heading3 className="h-5 w-5" />,
+    labelKey: 'document.slashMenu.name.heading3',
+    isActive: (isParagraph: () => boolean, isActivated: (level: number) => boolean) => isActivated(3),
+    onClick: (toParagraph: () => void, toHeading: (level: number) => () => void, setOpen: (v: boolean) => void) => () => { toHeading(3)(); setOpen(false); },
+  },
+];
+
 export function Heading() {
   const { t } = useTranslation();
   const editor = useSlateStatic() as YjsEditor;
@@ -167,130 +194,41 @@ export function Heading() {
           {...popoverProps}
         >
           <div className="flex flex-col w-[200px] rounded-[12px]" style={{ padding: 'var(--spacing-spacing-m)' }}>
-            <Button
-              {...getButtonProps(0)}
-              startIcon={<ParagraphSvg className="h-5 w-5" />}
-              color="inherit"
-              onClick={() => {
-                toParagraph();
-                setOpen(false);
-              }}
-              disableRipple
-              className="text-foreground"
-              sx={{
-                '.MuiButton-startIcon': {
-                  margin: 0,
-                  marginRight: 'var(--spacing-spacing-m)'
-                },
-                padding: '0 var(--spacing-spacing-m)',
-                height: '32px',
-                minHeight: '32px',
-                borderRadius: '8px',
-                justifyContent: 'flex-start',
-                textAlign: 'left',
-                ...(isParagraph() && {
-                  backgroundColor: 'var(--fill-list-active)'
-                }),
-                ...(selectedIndex === 0 && {
-                  backgroundColor: 'var(--fill-list-hover)'
-                })
-              }}
-            >
-              {t('editor.text')}
-            </Button>
-            <Button
-              {...getButtonProps(1)}
-              startIcon={<Heading1 className="h-5 w-5" />}
-              color="inherit"
-              onClick={() => {
-                toHeading(1)();
-                setOpen(false);
-              }}
-              disableRipple
-              className="text-foreground"
-              sx={{
-                '.MuiButton-startIcon': {
-                  margin: 0,
-                  marginRight: 'var(--spacing-spacing-m)'
-                },
-                padding: '0 var(--spacing-spacing-m)',
-                height: '32px',
-                minHeight: '32px',
-                borderRadius: '8px',
-                justifyContent: 'flex-start',
-                textAlign: 'left',
-                ...(isActivated(1) && {
-                  backgroundColor: 'var(--fill-list-active)'
-                }),
-                ...(selectedIndex === 1 && {
-                  backgroundColor: 'var(--fill-list-hover)'
-                })
-              }}
-            >
-              {t('document.slashMenu.name.heading1')}
-            </Button>
-            <Button
-              {...getButtonProps(2)}
-              startIcon={<Heading2 className="h-5 w-5" />}
-              color="inherit"
-              onClick={() => {
-                toHeading(2)();
-                setOpen(false);
-              }}
-              disableRipple
-              className="text-foreground"
-              sx={{
-                '.MuiButton-startIcon': {
-                  margin: 0,
-                  marginRight: 'var(--spacing-spacing-m)'
-                },
-                padding: '0 var(--spacing-spacing-m)',
-                height: '32px',
-                minHeight: '32px',
-                borderRadius: '8px',
-                justifyContent: 'flex-start',
-                textAlign: 'left',
-                ...(isActivated(2) && {
-                  backgroundColor: 'var(--fill-list-active)'
-                }),
-                ...(selectedIndex === 2 && {
-                  backgroundColor: 'var(--fill-list-hover)'
-                })
-              }}
-            >
-              {t('document.slashMenu.name.heading2')}
-            </Button>
-            <Button
-              {...getButtonProps(3)}
-              startIcon={<Heading3 className="h-5 w-5" />}
-              color="inherit"
-              onClick={() => {
-                toHeading(3)();
-                setOpen(false);
-              }}
-              disableRipple
-              className="text-foreground"
-              sx={{
-                '.MuiButton-startIcon': {
-                  margin: 0,
-                  marginRight: 'var(--spacing-spacing-m)'
-                },
-                padding: '0 var(--spacing-spacing-m)',
-                height: '32px',
-                minHeight: '32px',
-                borderRadius: '8px',
-                justifyContent: 'flex-start',
-                textAlign: 'left',
-                ...(isActivated(3) && {
-                  backgroundColor: 'var(--fill-list-active)'
-                }),
-                ...(selectedIndex === 3 && {
-                  backgroundColor: 'var(--fill-list-hover)'
-                })
-              }}
-            >
-              {t('document.slashMenu.name.heading3')}
-            </Button>
+            {headingOptions.map((opt, idx) => (
+              <Button
+                key={opt.labelKey}
+                {...getButtonProps(idx)}
+                startIcon={opt.icon}
+                color="inherit"
+                onClick={opt.onClick(toParagraph, toHeading, setOpen)}
+                disableRipple
+                className="text-text-primary"
+                sx={{
+                  '.MuiButton-startIcon': {
+                    margin: 0,
+                    marginRight: 'var(--spacing-spacing-m)'
+                  },
+                  padding: '0 var(--spacing-spacing-m)',
+                  height: '32px',
+                  minHeight: '32px',
+                  borderRadius: '8px',
+                  justifyContent: 'flex-start',
+                  textAlign: 'left',
+                  fontSize: '14px',
+                  fontStyle: 'normal',
+                  fontWeight: 400,
+                  lineHeight: '20px',
+                  ...(opt.isActive(isParagraph, isActivated) && {
+                    backgroundColor: 'var(--fill-list-active)'
+                  }),
+                  ...(selectedIndex === idx && {
+                    backgroundColor: 'var(--fill-list-hover)'
+                  })
+                }}
+              >
+                {String(t(opt.labelKey as any))}
+              </Button>
+            ))}
           </div>
         </Popover>
       )}
