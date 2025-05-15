@@ -7,6 +7,7 @@ import Bold from '@/components/editor/components/toolbar/selection-toolbar/actio
 import BulletedList from '@/components/editor/components/toolbar/selection-toolbar/actions/BulletedList';
 import Href from '@/components/editor/components/toolbar/selection-toolbar/actions/Href';
 import Color from '@/components/editor/components/toolbar/selection-toolbar/actions/Color';
+import ColorHighlight from '@/components/editor/components/toolbar/selection-toolbar/actions/ColorHighlight';
 import Formula from '@/components/editor/components/toolbar/selection-toolbar/actions/Formula';
 import Heading from '@/components/editor/components/toolbar/selection-toolbar/actions/Heading';
 import InlineCode from '@/components/editor/components/toolbar/selection-toolbar/actions/InlineCode';
@@ -96,6 +97,7 @@ function ToolbarActions() {
           <Underline />
           <Italic />
           <Color />
+          <ColorHighlight />
           {/* <StrikeThrough /> */}
         </>
       }
