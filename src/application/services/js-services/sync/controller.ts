@@ -22,6 +22,11 @@ export const parseRid = (rid: string): af_proto.messages.IRid => {
     };
 }
 
+export const createWorkspaceController = async (workspaceId: string): Promise<WorkspaceController> => {
+    const options: WorkspaceControllerOptions = {
+    }
+}
+
 /**
  * WorkspaceController is responsible for managing the connection to the
  * AppFlowy server and handling the synchronization of Yjs documents, as
@@ -52,7 +57,7 @@ export class WorkspaceController {
      */
     public async open() {
         await this.db.open()
-        await this.ws.connect(this._webSocketUrl())
+        this.ws.connect(this._webSocketUrl())
     }
 
     public close() {

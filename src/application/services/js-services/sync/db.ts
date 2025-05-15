@@ -83,7 +83,7 @@ export class Db {
         }
     }
 
-    async close() {
+    close() {
         if (this._db) {
             this._db.close()
             this._db = null

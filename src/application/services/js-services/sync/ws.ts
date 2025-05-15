@@ -49,31 +49,19 @@ export class Ws {
         this._onClose = callback
     }
 
-    connect(url: string) {
+    connect(url: string): void {
         if (this._ws) {
             this._ws.close()
         }
         const ws = new WebSocket(url)
         ws.binaryType = 'arraybuffer'
         ws.onmessage = this._onMessage
+        ws.onopen = this._onOpen
+        ws.onclose = this._onClose
         this._ws = ws
-        return new Promise<void>((resolve, reject) => {
-            ws.onerror = (e) => {
-                this._onError(e) 
-                reject(e)
-            }
-            ws.onopen = (e) => {
-                this._onOpen(e) 
-                resolve()
-            }
-            ws.onclose = (e) => {
-                this._onClose(e)
-                reject(e)
-            }
-        })
     }
 
-    close() {
+    close(): void {
         //TODO: close the connection
         if (this._ws) {
             this._ws.close()
