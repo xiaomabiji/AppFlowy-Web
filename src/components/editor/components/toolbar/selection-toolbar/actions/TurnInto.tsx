@@ -23,6 +23,7 @@ import { ReactComponent as ToggleHeading1Icon } from '@/assets/icons/toggle_h1.s
 import { ReactComponent as ToggleHeading2Icon } from '@/assets/icons/toggle_h2.svg';
 import { ReactComponent as ToggleHeading3Icon } from '@/assets/icons/toggle_h3.svg';
 import type { HeadingBlockData } from '@/application/types';
+import { ReactComponent as TickIcon } from '@/assets/icons/tick.svg';
 
 type BlockOption = {
     type: 'paragraph' | 'heading1' | 'heading2' | 'heading3' | 'quote' | 'bulleted' | 'numbered' | 'toggleHeading1' | 'toggleHeading2' | 'toggleHeading3' | 'toggle';
@@ -30,6 +31,7 @@ type BlockOption = {
     label: string;
     blockType: BlockType;
     data?: any;
+    group: 'text' | 'list' | 'toggle' | 'other';
 };
 
 const blockOptions: BlockOption[] = [
@@ -38,6 +40,7 @@ const blockOptions: BlockOption[] = [
         icon: ParagraphSvg,
         label: 'editor.text',
         blockType: BlockType.Paragraph,
+        group: 'text',
     },
     {
         type: 'heading1',
@@ -45,6 +48,7 @@ const blockOptions: BlockOption[] = [
         label: 'document.slashMenu.name.heading1',
         blockType: BlockType.HeadingBlock,
         data: { level: 1 },
+        group: 'text',
     },
     {
         type: 'heading2',
@@ -52,6 +56,7 @@ const blockOptions: BlockOption[] = [
         label: 'document.slashMenu.name.heading2',
         blockType: BlockType.HeadingBlock,
         data: { level: 2 },
+        group: 'text',
     },
     {
         type: 'heading3',
@@ -59,12 +64,28 @@ const blockOptions: BlockOption[] = [
         label: 'document.slashMenu.name.heading3',
         blockType: BlockType.HeadingBlock,
         data: { level: 3 },
+        group: 'text',
+    },
+    {
+        type: 'bulleted',
+        icon: BulletedListSvg,
+        label: 'toolbar.bulletList',
+        blockType: BlockType.BulletedListBlock,
+        group: 'list',
+    },
+    {
+        type: 'numbered',
+        icon: NumberedListSvg,
+        label: 'editor.numberedList',
+        blockType: BlockType.NumberedListBlock,
+        group: 'list',
     },
     {
         type: 'toggle',
         icon: ToggleListIcon,
         label: 'document.slashMenu.name.toggleList',
         blockType: BlockType.ToggleListBlock,
+        group: 'toggle',
     },
     {
         type: 'toggleHeading1',
@@ -72,6 +93,7 @@ const blockOptions: BlockOption[] = [
         label: 'document.slashMenu.name.toggleHeading1',
         blockType: BlockType.ToggleListBlock,
         data: { level: 1 },
+        group: 'toggle',
     },
     {
         type: 'toggleHeading2',
@@ -79,6 +101,7 @@ const blockOptions: BlockOption[] = [
         label: 'document.slashMenu.name.toggleHeading2',
         blockType: BlockType.ToggleListBlock,
         data: { level: 2 },
+        group: 'toggle',
     },
     {
         type: 'toggleHeading3',
@@ -86,24 +109,14 @@ const blockOptions: BlockOption[] = [
         label: 'document.slashMenu.name.toggleHeading3',
         blockType: BlockType.ToggleListBlock,
         data: { level: 3 },
+        group: 'toggle',
     },
     {
         type: 'quote',
         icon: QuoteSvg,
         label: 'toolbar.quote',
         blockType: BlockType.QuoteBlock,
-    },
-    {
-        type: 'bulleted',
-        icon: BulletedListSvg,
-        label: 'toolbar.bulletList',
-        blockType: BlockType.BulletedListBlock,
-    },
-    {
-        type: 'numbered',
-        icon: NumberedListSvg,
-        label: 'editor.numberedList',
-        blockType: BlockType.NumberedListBlock,
+        group: 'other',
     },
 ];
 
@@ -124,15 +137,34 @@ function TurnInfo() {
     // Helper: get current block type and heading level
     let currentType: string | null = null;
     let currentLevel: number | null = null;
+    let currentGroup: BlockOption['group'] | null = null;
     try {
         const [node] = getBlockEntry(editor);
-        if (node.type === BlockType.Paragraph) currentType = 'paragraph';
+        if (node.type === BlockType.Paragraph) {
+            currentType = 'paragraph';
+            currentGroup = 'text';
+        }
         else if (node.type === BlockType.HeadingBlock) {
             currentType = 'heading';
             currentLevel = (node.data as HeadingBlockData).level;
-        } else if (node.type === BlockType.QuoteBlock) currentType = 'quote';
-        else if (node.type === BlockType.BulletedListBlock) currentType = 'bulleted';
-        else if (node.type === BlockType.NumberedListBlock) currentType = 'numbered';
+            currentGroup = 'text';
+        }
+        else if (node.type === BlockType.QuoteBlock) {
+            currentType = 'quote';
+            currentGroup = 'other';
+        }
+        else if (node.type === BlockType.BulletedListBlock) {
+            currentType = 'bulleted';
+            currentGroup = 'list';
+        }
+        else if (node.type === BlockType.NumberedListBlock) {
+            currentType = 'numbered';
+            currentGroup = 'list';
+        }
+        else if (node.type === BlockType.ToggleListBlock) {
+            currentType = 'toggle';
+            currentGroup = 'toggle';
+        }
     } catch (e) { }
 
     const getDisplayText = () => {
@@ -164,12 +196,52 @@ function TurnInfo() {
         } catch (e) { handleClose(); }
     };
 
+    const getSuggestionOptions = () => {
+        if (!currentGroup) return [];
+
+        // Get all options from the same group except the current one
+        return blockOptions.filter(option =>
+            option.group === currentGroup &&
+            (option.type !== currentType &&
+                !(currentType === 'heading' && option.type === `heading${currentLevel}`))
+        );
+    };
+
+    const getTurnIntoOptions = () => {
+        const suggestionOptions = getSuggestionOptions();
+        // Filter out options that are already in suggestions
+        return blockOptions.filter(option =>
+            !suggestionOptions.some(suggestion => suggestion.type === option.type)
+        );
+    };
+
+    const suggestionOptions = getSuggestionOptions();
+    const turnIntoOptions = getTurnIntoOptions();
+
     const { getButtonProps, selectedIndex } = useKeyboardNavigation({
-        itemCount: blockOptions.length,
+        itemCount: suggestionOptions.length + turnIntoOptions.length,
         isOpen: open,
-        onSelect: (index) => handleBlockChange(blockOptions[index]),
+        onSelect: (index) => {
+            const options = [...suggestionOptions, ...turnIntoOptions];
+            handleBlockChange(options[index]);
+        },
         onClose: handleClose,
     });
+
+    function isOptionActive(option: BlockOption, currentType: string | null, currentLevel: number | null) {
+        if (!currentType) return false;
+        if (option.type === 'paragraph' && currentType === 'paragraph') return true;
+        if (option.type.startsWith('heading') && currentType === 'heading') {
+            // heading1/2/3 匹配 level
+            return option.data && option.data.level === currentLevel;
+        }
+        if (option.type === 'bulleted' && currentType === 'bulleted') return true;
+        if (option.type === 'numbered' && currentType === 'numbered') return true;
+        if (option.type === 'toggle' && currentType === 'toggle') return true;
+        if (option.type.startsWith('toggleHeading') && currentType === 'toggle' && option.data && option.data.level === currentLevel) return true;
+        if (option.type === 'quote' && currentType === 'quote') return true;
+        return false;
+    }
 
     return (
         <div className={'flex items-center justify-center'}>
@@ -209,7 +281,56 @@ function TurnInfo() {
                     style: { marginTop: '6px', minWidth: 200, paddingLeft: 'var(--spacing-spacing-m)', paddingRight: 'var(--spacing-spacing-m)' }
                 }}
             >
-                {/* Group label: Turn into */}
+                {suggestionOptions.length > 0 && (
+                    <>
+                        <Typography
+                            className='text-text-secondary'
+                            variant="body2"
+                            sx={{
+                                fontSize: 12,
+                                fontWeight: 600,
+                                lineHeight: '20px',
+                                px: 1.5,
+                                py: 0.5,
+                                pointerEvents: 'none',
+                                userSelect: 'none',
+                            }}
+                        >
+                            {t('toolbar.suggestion', { defaultValue: 'Suggestion' })}
+                        </Typography>
+                        {suggestionOptions.map((option, index) => (
+                            <MenuItem
+                                key={option.type}
+                                ref={el => getButtonProps(index).ref?.(el as any)}
+                                selected={selectedIndex === index}
+                                className="text--text-primary"
+                                sx={{
+                                    ...getButtonProps(index).sx,
+                                    fontSize: '14px',
+                                    fontStyle: 'normal',
+                                    fontWeight: 400,
+                                    lineHeight: '20px',
+                                    '&.Mui-selected, &.Mui-selected:hover': {
+                                        backgroundColor: 'var(--fill-list-hover) !important',
+                                        color: 'inherit',
+                                    },
+                                    '&:hover': {
+                                        backgroundColor: 'var(--fill-list-hover)',
+                                    },
+                                }}
+                                onClick={() => handleBlockChange(option)}
+                            >
+                                <option.icon className="h-5 w-5 mr-2" />
+                                {t(option.label, { defaultValue: option.label })}
+                                {isOptionActive(option, currentType, currentLevel) && (
+                                    <span className="ml-auto flex items-center">
+                                        <TickIcon className="h-5 w-5 text-icon-primary" />
+                                    </span>
+                                )}
+                            </MenuItem>
+                        ))}
+                    </>
+                )}
                 <Typography
                     className='text-text-secondary'
                     variant="body2"
@@ -225,16 +346,35 @@ function TurnInfo() {
                 >
                     {t('document.plugins.optionAction.turnInto', { defaultValue: 'Turn into' })}
                 </Typography>
-                {blockOptions.map((option, index) => (
+                {turnIntoOptions.map((option, index) => (
                     <MenuItem
                         key={option.type}
-                        ref={el => getButtonProps(index).ref?.(el as any)}
-                        selected={selectedIndex === index}
-                        sx={getButtonProps(index).sx}
+                        ref={el => getButtonProps(index + suggestionOptions.length).ref?.(el as any)}
+                        selected={selectedIndex === index + suggestionOptions.length}
+                        className="text--text-primary"
+                        sx={{
+                            ...getButtonProps(index + suggestionOptions.length).sx,
+                            fontSize: '14px',
+                            fontStyle: 'normal',
+                            fontWeight: 400,
+                            lineHeight: '20px',
+                            '&.Mui-selected, &.Mui-selected:hover': {
+                                backgroundColor: 'var(--fill-list-hover) !important',
+                                color: 'inherit',
+                            },
+                            '&:hover': {
+                                backgroundColor: 'var(--fill-list-hover)',
+                            },
+                        }}
                         onClick={() => handleBlockChange(option)}
                     >
                         <option.icon className="h-5 w-5 mr-2" />
                         {t(option.label, { defaultValue: option.label })}
+                        {isOptionActive(option, currentType, currentLevel) && (
+                            <span className="ml-auto flex items-center">
+                                <TickIcon className="h-5 w-5 text-icon-primary" />
+                            </span>
+                        )}
                     </MenuItem>
                 ))}
             </Menu>
