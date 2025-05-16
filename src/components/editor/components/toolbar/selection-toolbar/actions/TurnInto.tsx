@@ -1,33 +1,35 @@
-import React, { useRef, useState } from 'react';
-import { Button, Menu, MenuItem, PopoverProps, Typography } from '@mui/material';
-import ActionButton from './ActionButton';
-import { ReactComponent as BulletedListSvg } from '@/assets/icons/bulleted_list.svg';
-import { ReactComponent as NumberedListSvg } from '@/assets/icons/numbered_list.svg';
-import { ReactComponent as QuoteSvg } from '@/assets/icons/quote.svg';
-import { ReactComponent as TurnIntoSvg } from '@/assets/icons/turn_into.svg';
-import { useSlateStatic } from 'slate-react';
-import { CustomEditor } from '@/application/slate-yjs/command';
-import { ReactComponent as DownArrow } from '@/assets/icons/triangle_down.svg';
-import { YjsEditor } from '@/application/slate-yjs';
+import { Menu, MenuItem, Typography } from '@mui/material';
+import { FC, SVGProps, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSlateStatic } from 'slate-react';
+
+import { YjsEditor } from '@/application/slate-yjs';
+import { CustomEditor } from '@/application/slate-yjs/command';
 import { getBlockEntry } from '@/application/slate-yjs/utils/editor';
+import type { HeadingBlockData } from '@/application/types';
 import { BlockType } from '@/application/types';
-import { useSelectionToolbarContext } from '../SelectionToolbar.hooks';
-import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
-import { ReactComponent as ParagraphSvg } from '@/assets/icons/text.svg';
+import { ReactComponent as BulletedListSvg } from '@/assets/icons/bulleted_list.svg';
 import { ReactComponent as Heading1 } from '@/assets/icons/h1.svg';
 import { ReactComponent as Heading2 } from '@/assets/icons/h2.svg';
 import { ReactComponent as Heading3 } from '@/assets/icons/h3.svg';
-import { ReactComponent as ToggleListIcon } from '@/assets/icons/toggle_list.svg';
+import { ReactComponent as NumberedListSvg } from '@/assets/icons/numbered_list.svg';
+import { ReactComponent as QuoteSvg } from '@/assets/icons/quote.svg';
+import { ReactComponent as ParagraphSvg } from '@/assets/icons/text.svg';
+import { ReactComponent as TickIcon } from '@/assets/icons/tick.svg';
 import { ReactComponent as ToggleHeading1Icon } from '@/assets/icons/toggle_h1.svg';
 import { ReactComponent as ToggleHeading2Icon } from '@/assets/icons/toggle_h2.svg';
 import { ReactComponent as ToggleHeading3Icon } from '@/assets/icons/toggle_h3.svg';
-import type { HeadingBlockData } from '@/application/types';
-import { ReactComponent as TickIcon } from '@/assets/icons/tick.svg';
+import { ReactComponent as ToggleListIcon } from '@/assets/icons/toggle_list.svg';
+import { ReactComponent as DownArrow } from '@/assets/icons/triangle_down.svg';
+
+import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
+import { useSelectionToolbarContext } from '../SelectionToolbar.hooks';
+
+import ActionButton from './ActionButton';
 
 type BlockOption = {
     type: 'paragraph' | 'heading1' | 'heading2' | 'heading3' | 'quote' | 'bulleted' | 'numbered' | 'toggleHeading1' | 'toggleHeading2' | 'toggleHeading3' | 'toggle';
-    icon: React.FC<React.SVGProps<SVGSVGElement>>;
+    icon: FC<SVGProps<SVGSVGElement>>;
     label: string;
     blockType: BlockType;
     data?: any;
@@ -125,7 +127,6 @@ function TurnInfo() {
     const [selectedType, setSelectedType] = useState<BlockOption['type'] | null>(null);
     const ref = useRef<HTMLButtonElement | null>(null);
     const editor = useSlateStatic() as YjsEditor;
-    const selectedText = CustomEditor.getSelectionContent(editor)?.trim() || '';
     const { t } = useTranslation();
     const { forceShow } = useSelectionToolbarContext();
     const open = Boolean(anchorEl);
@@ -138,8 +139,10 @@ function TurnInfo() {
     let currentType: string | null = null;
     let currentLevel: number | null = null;
     let currentGroup: BlockOption['group'] | null = null;
+
     try {
         const [node] = getBlockEntry(editor);
+
         if (node.type === BlockType.Paragraph) {
             currentType = 'paragraph';
             currentGroup = 'text';
@@ -172,17 +175,20 @@ function TurnInfo() {
         if (currentType === 'heading' && currentLevel) {
             return t(`document.slashMenu.name.heading${currentLevel}`, { defaultValue: `Heading ${currentLevel}` });
         }
+
         if (currentType === 'quote') return t('toolbar.quote', { returnObjects: false, defaultValue: 'Quote' });
         if (currentType === 'bulleted') return t('toolbar.bulletList', { returnObjects: false, defaultValue: 'Bulleted List' });
         if (currentType === 'numbered') return t('toolbar.numberedList', { returnObjects: false, defaultValue: 'Numbered List' });
 
         const option = blockOptions.find(opt => opt.type === selectedType);
+
         return option ? t(option.label, { defaultValue: option.label }) : 'Text';
     };
 
     const handleBlockChange = (option: BlockOption) => {
         try {
             const [node] = getBlockEntry(editor);
+
             if (!node) return;
 
             if (node.type === option.blockType &&
@@ -191,6 +197,7 @@ function TurnInfo() {
             } else {
                 CustomEditor.turnToBlock(editor, node.blockId as string, option.blockType, option.data || {});
             }
+
             setSelectedType(option.type);
             handleClose();
         } catch (e) { handleClose(); }
@@ -209,6 +216,7 @@ function TurnInfo() {
 
     const getTurnIntoOptions = () => {
         const suggestionOptions = getSuggestionOptions();
+
         // Filter out options that are already in suggestions
         return blockOptions.filter(option =>
             !suggestionOptions.some(suggestion => suggestion.type === option.type)
@@ -223,6 +231,7 @@ function TurnInfo() {
         isOpen: open,
         onSelect: (index) => {
             const options = [...suggestionOptions, ...turnIntoOptions];
+
             handleBlockChange(options[index]);
         },
         onClose: handleClose,
@@ -235,6 +244,7 @@ function TurnInfo() {
             // heading1/2/3 匹配 level
             return option.data && option.data.level === currentLevel;
         }
+
         if (option.type === 'bulleted' && currentType === 'bulleted') return true;
         if (option.type === 'numbered' && currentType === 'numbered') return true;
         if (option.type === 'toggle' && currentType === 'toggle') return true;
@@ -250,7 +260,7 @@ function TurnInfo() {
                 onClick={e => {
                     e.preventDefault();
                     e.stopPropagation();
-                    setAnchorEl(e.currentTarget);
+                    setAnchorEl(e.currentTarget as HTMLElement);
                     forceShow(true);
                 }}
                 tooltip={getDisplayText()}

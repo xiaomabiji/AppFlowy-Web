@@ -1,23 +1,26 @@
+import Button from '@mui/material/Button';
+import { PopoverProps } from '@mui/material/Popover';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useSlateStatic } from 'slate-react';
+
 import { YjsEditor } from '@/application/slate-yjs';
 import { CustomEditor } from '@/application/slate-yjs/command';
 import { getBlockEntry } from '@/application/slate-yjs/utils/editor';
 import { BlockType, HeadingBlockData } from '@/application/types';
-import { Popover } from '@/components/_shared/popover';
-import { useSelectionToolbarContext } from '@/components/editor/components/toolbar/selection-toolbar/SelectionToolbar.hooks';
-import { PopoverProps } from '@mui/material/Popover';
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import ActionButton from './ActionButton';
-import { useTranslation } from 'react-i18next';
-import { useSlateStatic } from 'slate-react';
 import { ReactComponent as Heading1 } from '@/assets/icons/h1.svg';
 import { ReactComponent as Heading2 } from '@/assets/icons/h2.svg';
 import { ReactComponent as Heading3 } from '@/assets/icons/h3.svg';
-import { ReactComponent as DownArrow } from '@/assets/icons/triangle_down.svg';
-import Button from '@mui/material/Button';
-import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
 import { ReactComponent as ParagraphSvg } from '@/assets/icons/text.svg';
-import { ReactComponent as TickIcon } from '@/assets/icons/tick.svg';
 import { ReactComponent as TextFormatSvg } from '@/assets/icons/text_format.svg';
+import { ReactComponent as TickIcon } from '@/assets/icons/tick.svg';
+import { ReactComponent as DownArrow } from '@/assets/icons/triangle_down.svg';
+import { Popover } from '@/components/_shared/popover';
+import { useSelectionToolbarContext } from '@/components/editor/components/toolbar/selection-toolbar/SelectionToolbar.hooks';
+
+import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
+
+import ActionButton from './ActionButton';
 
 const popoverProps: Partial<PopoverProps> = {
   anchorOrigin: {
@@ -40,26 +43,26 @@ const headingOptions = [
   {
     icon: <ParagraphSvg className="h-5 w-5" />,
     labelKey: 'editor.text',
-    isActive: (isParagraph: () => boolean, isActivated: (level: number) => boolean) => isParagraph(),
-    onClick: (toParagraph: () => void, toHeading: (level: number) => () => void, setOpen: (v: boolean) => void) => () => { toParagraph(); setOpen(false); },
+    isActive: (isParagraph: () => boolean, _isActivated: (level: number) => boolean) => isParagraph(),
+    onClick: (toParagraph: () => void, _toHeading: (level: number) => () => void, setOpen: (v: boolean) => void) => () => { toParagraph(); setOpen(false); },
   },
   {
     icon: <Heading1 className="h-5 w-5" />,
     labelKey: 'document.slashMenu.name.heading1',
-    isActive: (isParagraph: () => boolean, isActivated: (level: number) => boolean) => isActivated(1),
-    onClick: (toParagraph: () => void, toHeading: (level: number) => () => void, setOpen: (v: boolean) => void) => () => { toHeading(1)(); setOpen(false); },
+    isActive: (_isParagraph: () => boolean, isActivated: (level: number) => boolean) => isActivated(1),
+    onClick: (_toParagraph: () => void, toHeading: (level: number) => () => void, setOpen: (v: boolean) => void) => () => { toHeading(1)(); setOpen(false); },
   },
   {
     icon: <Heading2 className="h-5 w-5" />,
     labelKey: 'document.slashMenu.name.heading2',
-    isActive: (isParagraph: () => boolean, isActivated: (level: number) => boolean) => isActivated(2),
-    onClick: (toParagraph: () => void, toHeading: (level: number) => () => void, setOpen: (v: boolean) => void) => () => { toHeading(2)(); setOpen(false); },
+    isActive: (_isParagraph: () => boolean, isActivated: (level: number) => boolean) => isActivated(2),
+    onClick: (_toParagraph: () => void, toHeading: (level: number) => () => void, setOpen: (v: boolean) => void) => () => { toHeading(2)(); setOpen(false); },
   },
   {
     icon: <Heading3 className="h-5 w-5" />,
     labelKey: 'document.slashMenu.name.heading3',
-    isActive: (isParagraph: () => boolean, isActivated: (level: number) => boolean) => isActivated(3),
-    onClick: (toParagraph: () => void, toHeading: (level: number) => () => void, setOpen: (v: boolean) => void) => () => { toHeading(3)(); setOpen(false); },
+    isActive: (_isParagraph: () => boolean, isActivated: (level: number) => boolean) => isActivated(3),
+    onClick: (_toParagraph: () => void, toHeading: (level: number) => () => void, setOpen: (v: boolean) => void) => () => { toHeading(3)(); setOpen(false); },
   },
 ];
 
@@ -110,6 +113,7 @@ export function Heading() {
   const isParagraph = useCallback(() => {
     try {
       const [node] = getBlockEntry(editor);
+
       return node && node.type === BlockType.Paragraph;
     } catch (e) {
       return false;
@@ -119,32 +123,13 @@ export function Heading() {
   const toParagraph = useCallback(() => {
     try {
       const [node] = getBlockEntry(editor);
+
       if (!node) return;
       CustomEditor.turnToBlock(editor, node.blockId as string, BlockType.Paragraph, {});
     } catch (e) {
       return;
     }
   }, [editor]);
-
-  const getActiveButton = useCallback(() => {
-    if (isParagraph()) {
-      return <ParagraphSvg className={'h-5 w-5'} />;
-    }
-
-    if (isActivated(1)) {
-      return <Heading1 className={'h-5 w-5'} />;
-    }
-
-    if (isActivated(2)) {
-      return <Heading2 className={'h-5 w-5'} />;
-    }
-
-    if (isActivated(3)) {
-      return <Heading3 className={'h-5 w-5'} />;
-    }
-
-    return <ParagraphSvg className='h-5 w-5' />;
-  }, [isActivated, isParagraph]);
 
   const { getButtonProps, selectedIndex } = useKeyboardNavigation({
     itemCount: 4,

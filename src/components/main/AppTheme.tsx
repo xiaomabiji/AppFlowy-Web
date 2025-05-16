@@ -1,12 +1,12 @@
-import { ThemeModeContext, useAppThemeMode } from '@/components/main/useAppThemeMode';
-import React, { useMemo } from 'react';
 import createTheme from '@mui/material/styles/createTheme';
 import ThemeProvider from '@mui/material/styles/ThemeProvider';
-import { i18nInstance } from '@/i18n/config';
-
+import { ReactNode, useMemo } from 'react';
 import { I18nextProvider } from 'react-i18next';
 
-function AppTheme({ children }: { children: React.ReactNode }) {
+import { ThemeModeContext, useAppThemeMode } from '@/components/main/useAppThemeMode';
+import { i18nInstance } from '@/i18n/config';
+
+function AppTheme({ children }: { children: ReactNode }) {
   const { isDark, setIsDark } = useAppThemeMode();
 
   const theme = useMemo(

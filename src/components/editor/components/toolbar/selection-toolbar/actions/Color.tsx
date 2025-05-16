@@ -1,16 +1,20 @@
+import { Tooltip } from '@mui/material';
+import { useCallback, useEffect, useMemo, useRef, useState, MouseEvent } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useSlateStatic } from 'slate-react';
+
 import { YjsEditor } from '@/application/slate-yjs';
 import { CustomEditor } from '@/application/slate-yjs/command';
 import { EditorMarkFormat } from '@/application/slate-yjs/types';
+import { ReactComponent as TextSvg } from '@/assets/icons/format_text.svg';
+import { ReactComponent as ColorSvg } from '@/assets/icons/text_color.svg';
 import { Popover } from '@/components/_shared/popover';
 import { useSelectionToolbarContext } from '@/components/editor/components/toolbar/selection-toolbar/SelectionToolbar.hooks';
-import { ColorEnum, renderColor } from '@/utils/color';
-import { Tooltip } from '@mui/material';
-import React, { useCallback, useEffect, useMemo, useRef } from 'react';
+import { renderColor } from '@/utils/color';
+
 import ActionButton from './ActionButton';
-import { useTranslation } from 'react-i18next';
-import { useSlateStatic } from 'slate-react';
-import { ReactComponent as ColorSvg } from '@/assets/icons/text_color.svg';
-import { ReactComponent as TextSvg } from '@/assets/icons/format_text.svg';
+
+
 
 function Color() {
   const { t } = useTranslation();
@@ -20,10 +24,9 @@ function Color() {
     CustomEditor.isMarkActive(editor, EditorMarkFormat.BgColor) ||
     CustomEditor.isMarkActive(editor, EditorMarkFormat.FontColor);
   const marks = CustomEditor.getAllMarks(editor);
-  const activeBgColor = marks.find((mark) => mark[EditorMarkFormat.BgColor])?.[EditorMarkFormat.BgColor];
   const activeFontColor = marks.find((mark) => mark[EditorMarkFormat.FontColor])?.[EditorMarkFormat.FontColor];
 
-  const [anchorEl, setAnchorEl] = React.useState<HTMLButtonElement | null>(null);
+  const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
   const open = Boolean(anchorEl);
 
   const wrapperRef = useRef<HTMLSpanElement>(null);
@@ -37,8 +40,10 @@ function Color() {
   useEffect(() => {
     if (wrapperRef.current) {
       const svg = wrapperRef.current.querySelector('svg');
+
       if (svg) {
         const bar = svg.querySelector('[class*="color-bar"]');
+
         if (bar) {
           bar.setAttribute('stroke', activeFontColor || 'currentColor');
         }
@@ -46,7 +51,7 @@ function Color() {
     }
   }, [activeFontColor]);
 
-  const onClick = useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
+  const onClick = useCallback((e: MouseEvent<HTMLButtonElement>) => {
     e.stopPropagation();
     e.preventDefault();
     setAnchorEl(e.currentTarget);

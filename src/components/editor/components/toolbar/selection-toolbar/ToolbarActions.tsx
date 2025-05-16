@@ -1,38 +1,29 @@
+import { Divider } from '@mui/material';
+import { useMemo } from 'react';
+import { Editor, Element, Path } from 'slate';
+import { useSlate } from 'slate-react';
+
 import { YjsEditor } from '@/application/slate-yjs';
 import { getBlockEntry } from '@/application/slate-yjs/utils/editor';
 import { BlockType } from '@/application/types';
 import AIAssistant from '@/components/editor/components/toolbar/selection-toolbar/actions/AIAssistant';
 import Align from '@/components/editor/components/toolbar/selection-toolbar/actions/Align';
 import Bold from '@/components/editor/components/toolbar/selection-toolbar/actions/Bold';
-import BulletedList from '@/components/editor/components/toolbar/selection-toolbar/actions/BulletedList';
-import Href from '@/components/editor/components/toolbar/selection-toolbar/actions/Href';
 import Color from '@/components/editor/components/toolbar/selection-toolbar/actions/Color';
 import ColorHighlight from '@/components/editor/components/toolbar/selection-toolbar/actions/ColorHighlight';
-import Formula from '@/components/editor/components/toolbar/selection-toolbar/actions/Formula';
 import Heading from '@/components/editor/components/toolbar/selection-toolbar/actions/Heading';
+import Href from '@/components/editor/components/toolbar/selection-toolbar/actions/Href';
 import InlineCode from '@/components/editor/components/toolbar/selection-toolbar/actions/InlineCode';
 import Italic from '@/components/editor/components/toolbar/selection-toolbar/actions/Italic';
-import NumberedList from '@/components/editor/components/toolbar/selection-toolbar/actions/NumberedList';
-import Quote from '@/components/editor/components/toolbar/selection-toolbar/actions/Quote';
-import StrikeThrough from '@/components/editor/components/toolbar/selection-toolbar/actions/StrikeThrough';
-import Underline from '@/components/editor/components/toolbar/selection-toolbar/actions/Underline';
 import TurnInto from '@/components/editor/components/toolbar/selection-toolbar/actions/TurnInto';
+import Underline from '@/components/editor/components/toolbar/selection-toolbar/actions/Underline';
 import {
   useSelectionToolbarContext,
 } from '@/components/editor/components/toolbar/selection-toolbar/SelectionToolbar.hooks';
-import { Divider } from '@mui/material';
-import { Editor, Element, Path } from 'slate';
-import Paragraph from './actions/Paragraph';
-import React, { useMemo } from 'react';
-import { useSlate } from 'slate-react';
-import { ReactComponent as MoreIcon } from '@/assets/icons/more.svg';
-import Popover from '@/components/_shared/popover/Popover';
-import { useTranslation } from 'react-i18next';
-import ActionButton from './actions/ActionButton';
-import { ReactComponent as StrikeThroughSvg } from '@/assets/icons/strikethrough.svg';
-import { ReactComponent as FormulaSvg } from '@/assets/icons/formula.svg';
-import { Button } from '@mui/material';
+
 import MoreOptions from './actions/MoreOptions';
+
+
 
 function ToolbarActions() {
   const editor = useSlate() as YjsEditor;

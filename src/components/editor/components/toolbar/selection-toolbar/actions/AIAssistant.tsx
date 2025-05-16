@@ -1,23 +1,25 @@
+import { AIAssistantType,AIWriterMenu, useAIWriter } from '@appflowyinc/ai-chat';
+import { useCallback, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { ReactEditor, useSlate } from 'slate-react';
+
 import { YjsEditor } from '@/application/slate-yjs';
 import { CustomEditor } from '@/application/slate-yjs/command';
+import { ReactComponent as AskAIIcon } from '@/assets/icons/ai.svg';
+import { ReactComponent as ImproveWritingIcon } from '@/assets/icons/ai_improve_writing.svg';
+import { ReactComponent as TriangleDownIcon } from '@/assets/icons/triangle_down.svg';
 import ActionButton from '@/components/editor/components/toolbar/selection-toolbar/actions/ActionButton';
 import {
   useSelectionToolbarContext,
 } from '@/components/editor/components/toolbar/selection-toolbar/SelectionToolbar.hooks';
 import { useEditorContext } from '@/components/editor/EditorContext';
-import { useAIWriter, AIWriterMenu, AIAssistantType } from '@appflowyinc/ai-chat';
-import React, { useCallback, useEffect } from 'react';
-import { ReactComponent as AskAIIcon } from '@/assets/icons/ai.svg';
-import { ReactComponent as ImproveWritingIcon } from '@/assets/icons/ai_improve_writing.svg';
-import { useTranslation } from 'react-i18next';
-import { ReactEditor, useSlate } from 'slate-react';
-import { ReactComponent as TriangleDownIcon } from '@/assets/icons/triangle_down.svg';
+
 
 function AIAssistant() {
   const { t } = useTranslation();
   const editor = useSlate() as YjsEditor;
 
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
   const {
     addDecorate,
   } = useEditorContext();
@@ -27,7 +29,7 @@ function AIAssistant() {
   const {
     improveWriting,
   } = useAIWriter();
-  const [content, setContent] = React.useState('');
+  const [content, setContent] = useState('');
 
   const addReplaceStyle = useCallback(() => {
     const range = editor.selection;

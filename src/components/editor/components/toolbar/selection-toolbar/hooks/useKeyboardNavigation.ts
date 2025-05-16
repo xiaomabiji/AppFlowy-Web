@@ -1,5 +1,6 @@
-import { HOT_KEY_NAME, createHotkey } from '@/utils/hotkeys';
 import { useCallback, useEffect, useRef, useState } from 'react';
+
+import { createHotkey,HOT_KEY_NAME } from '@/utils/hotkeys';
 
 interface UseKeyboardNavigationProps {
     itemCount: number;

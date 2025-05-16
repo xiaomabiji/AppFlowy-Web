@@ -5,7 +5,12 @@ module.exports = {
     es6: true,
     node: true,
   },
-  extends: ['eslint:recommended', 'plugin:@typescript-eslint/recommended'],
+  extends: [
+    'eslint:recommended',
+    'plugin:@typescript-eslint/recommended',
+    'plugin:import/recommended',
+    'plugin:import/typescript'
+  ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
     project: 'tsconfig.json',
@@ -13,8 +18,49 @@ module.exports = {
     tsconfigRootDir: __dirname,
     extraFileExtensions: ['.json'],
   },
-  plugins: ['@typescript-eslint', 'react-hooks'],
+  plugins: ['@typescript-eslint', 'react-hooks', 'import'],
+  settings: {
+    'import/resolver': {
+      typescript: {
+        alwaysTryTypes: true,
+        project: 'tsconfig.json',
+      },
+    },
+  },
   rules: {
+    // Import rules
+    'import/order': [
+      'error',
+      {
+        'groups': ['builtin', 'external', 'internal', 'parent', 'sibling', 'index', 'type'],
+        'pathGroups': [
+          {
+            'pattern': '@/**',
+            'group': 'internal',
+            'position': 'before'
+          }
+        ],
+        'newlines-between': 'always',
+        'alphabetize': { 'order': 'asc', 'caseInsensitive': true }
+      }
+    ],
+    'import/no-unresolved': 'error',
+    'import/no-duplicates': 'error',
+    'import/no-named-as-default': 'off',
+    'import/no-named-as-default-member': 'off',
+
+    // TypeScript rules
+    '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/ban-types': ['error', {
+      'types': {
+        'Object': false,
+        'object': false,
+        'Function': false,
+      },
+      'extendDefaults': true
+    }],
+
+    // Existing rules
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'error',
     '@typescript-eslint/adjacent-overload-signatures': 'error',
@@ -34,7 +80,6 @@ module.exports = {
     eqeqeq: ['error', 'always'],
     'no-cond-assign': 'error',
     'no-duplicate-case': 'error',
-    'no-duplicate-imports': 'error',
     'no-empty': [
       'error',
       {
@@ -66,7 +111,6 @@ module.exports = {
       { blankLine: 'any', prev: 'import', next: 'import' },
       { blankLine: 'always', prev: 'block-like', next: '*' },
       { blankLine: 'always', prev: 'block', next: '*' },
-
     ],
   },
   ignorePatterns: ['src/**/*.test.ts', '**/__tests__/**/*.json', 'package.json', '__mocks__/*.ts'],

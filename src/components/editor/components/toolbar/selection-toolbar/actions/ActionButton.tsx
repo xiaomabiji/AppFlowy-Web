@@ -1,14 +1,15 @@
-import React, { forwardRef } from 'react';
-import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import { Tooltip } from '@mui/material';
+import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+import { forwardRef, ReactNode, MouseEvent } from 'react';
+
 import { cn } from '@/lib/utils';
 
 const ActionButton = forwardRef<
   HTMLButtonElement,
   {
-    tooltip?: string | React.ReactNode;
-    onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void;
-    children: React.ReactNode;
+    tooltip?: string | ReactNode;
+    onClick?: (e: MouseEvent<HTMLButtonElement>) => void;
+    children: ReactNode;
     active?: boolean;
   } & IconButtonProps
 >(({ tooltip, onClick, disabled, children, active, className, ...props }, ref) => {

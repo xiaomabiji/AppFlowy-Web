@@ -1,17 +1,22 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { useSlate } from 'slate-react';
-import { ReactComponent as MoreIcon } from '@/assets/icons/more.svg';
-import { ReactComponent as StrikeThroughSvg } from '@/assets/icons/strikethrough.svg';
-import { ReactComponent as FormulaSvg } from '@/assets/icons/formula.svg';
-import Popover from '@/components/_shared/popover/Popover';
-import ActionButton from './ActionButton';
 import { Button } from '@mui/material';
-import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
+import { PopoverProps } from '@mui/material/Popover';
+import { useTranslation } from 'react-i18next';
+import { Editor, Text, Transforms } from 'slate';
+import { useSlate } from 'slate-react';
+
 import { CustomEditor } from '@/application/slate-yjs/command';
 import { EditorMarkFormat } from '@/application/slate-yjs/types';
-import { Transforms, Text, Editor } from 'slate';
-import { PopoverProps } from '@mui/material/Popover';
+import { ReactComponent as FormulaSvg } from '@/assets/icons/formula.svg';
+import { ReactComponent as MoreIcon } from '@/assets/icons/more.svg';
+import { ReactComponent as StrikeThroughSvg } from '@/assets/icons/strikethrough.svg';
+import Popover from '@/components/_shared/popover/Popover';
+
+import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
+
+import ActionButton from './ActionButton';
+import { useRef, useState } from 'react';
+
+
 
 const options = [
     {
@@ -30,13 +35,17 @@ const options = [
         labelKey: 'document.plugins.createInlineMathEquation',
         onClick: (editor: any, setOpen: (v: boolean) => void) => {
             const selection = editor.selection;
+
             if (!selection) return;
             const isActivated = CustomEditor.isMarkActive(editor, EditorMarkFormat.Formula);
+
             if (!isActivated) {
                 const text = editor.string(selection);
+
                 editor.delete();
                 editor.insertText('$');
                 const newSelection = editor.selection;
+
                 if (!newSelection) return;
                 Transforms.select(editor, {
                     anchor: {
@@ -54,15 +63,18 @@ const options = [
                     at: selection,
                     match: (n: any) => !Editor.isEditor(n) && Text.isText(n) && (n as any).formula !== undefined,
                 });
+
                 if (!entry) return;
                 const [node, path] = entry;
-                const formula = (node as any).formula;
+                const formula = (node).formula;
+
                 if (!formula) return;
                 editor.select(path);
                 CustomEditor.removeMark(editor, EditorMarkFormat.Formula);
                 editor.delete();
                 editor.insertText(formula);
             }
+
             setOpen(false);
         },
     },
@@ -86,8 +98,8 @@ const popoverProps: Partial<PopoverProps> = {
 };
 
 export default function MoreOptions() {
-    const [open, setOpen] = React.useState(false);
-    const ref = React.useRef<HTMLButtonElement | null>(null);
+    const [open, setOpen] = useState(false);
+    const ref = useRef<HTMLButtonElement | null>(null);
     const { t } = useTranslation();
     const editor = useSlate();
 
