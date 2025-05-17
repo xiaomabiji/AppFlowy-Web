@@ -89,7 +89,11 @@ function ToolbarActions() {
           <Italic />
           <Color />
           <ColorHighlight />
-          {/* <StrikeThrough /> */}
+          <Divider
+            className={'my-1.5 bg--border-primary'}
+            orientation={'vertical'}
+            flexItem={true}
+          />
         </>
       }
       {!isCodeBlock && <InlineCode />}

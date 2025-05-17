@@ -153,7 +153,7 @@ function HrefPopover({
 
             setUrlValid(true);
           }}
-          size={'small'} fullWidth={true} placeholder={t('toolbar.addLink')} />
+          size={'small'} fullWidth={true} placeholder={t('toolbar.addLink')} className="text-text-primary" />
         {urlValid ? null : (
           <div className={'text-function-error text-xs'}>
             {t('editor.incorrectLink')}
@@ -253,7 +253,7 @@ function HrefPopover({
               }
             }}
             size={'small'}
-            fullWidth={true} placeholder={t('toolbar.addLink')} />
+            fullWidth={true} placeholder={t('toolbar.addLink')} className="text-text-primary" />
         </div>
         <Divider />
         <Button
@@ -298,7 +298,7 @@ function HrefPopover({
       transformOrigin={defaultOrigin}
       slotProps={{
         paper: {
-          className: 'p-4 min-w-[360px]',
+          className: 'p-4 min-w-[360px] bg-[var(--surface-primary)]',
           ref: paperRef,
         },
       }}
