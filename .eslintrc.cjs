@@ -18,7 +18,6 @@ module.exports = {
     tsconfigRootDir: __dirname,
     extraFileExtensions: ['.json'],
   },
-  // Make sure to include the unused-imports plugin here
   plugins: ['@typescript-eslint', 'react-hooks', 'import', 'unused-imports'],
   settings: {
     'import/resolver': {
@@ -67,12 +66,10 @@ module.exports = {
     'no-void': 'off',
     'prefer-const': 'error',
     'prefer-spread': 'off',
-    '@typescript-eslint/no-unused-vars': [
-      'error',
-      {
-        argsIgnorePattern: '^_',
-      },
-    ],
+
+    // 禁用标准的未使用变量规则，使用 unused-imports 插件的规则代替
+    '@typescript-eslint/no-unused-vars': 'off',
+
     'padding-line-between-statements': [
       'error',
       { blankLine: 'always', prev: ['const', 'let', 'var'], next: '*' },
@@ -86,7 +83,6 @@ module.exports = {
     'import/no-named-as-default': 'off',
     'import/no-named-as-default-member': 'off',
 
-    // 添加 import 规则（设置为 warn 而不是 error）
     'import/no-unresolved': 'warn',
     'import/named': 'warn',
     'import/namespace': 'warn',
@@ -95,11 +91,8 @@ module.exports = {
     'import/no-unused-modules': 'warn',
     'import/no-duplicates': 'warn',
 
-    // Remove this line
-    // 'import/no-unused-imports': 'warn',
-
-    // Add these rules for the unused-imports plugin
-    'unused-imports/no-unused-imports': 'warn',
+    // unused-imports should be error level so eslint can auto fix it
+    'unused-imports/no-unused-imports': 'error',
     'unused-imports/no-unused-vars': [
       'warn',
       {
@@ -110,7 +103,7 @@ module.exports = {
       }
     ],
 
-    // import 顺序规则
+    // 导入顺序规则
     'import/order': ['warn', {
       'groups': [
         'builtin',
