@@ -276,7 +276,7 @@ function TurnInfo() {
                     >
                         {getDisplayText()}
                     </span>
-                    <DownArrow className={'h-5 w-3 text-icon-primary'} />
+                    <DownArrow className={'h-5 w-3 text-icon-tertiary'} />
                 </div>
             </ActionButton>
             <Menu

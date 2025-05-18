@@ -166,7 +166,7 @@ export function Heading() {
       >
         <div className={'flex items-center justify-center gap-1'}>
           <TextFormatSvg className='h-5 w-5' />
-          <DownArrow className={'h-5 w-3 text-icon-primary'} />
+          <DownArrow className={'h-5 w-3 text-icon-tertiary'} />
         </div>
       </ActionButton>
       {toolbarVisible && (
@@ -214,7 +214,7 @@ export function Heading() {
                 {String(t(opt.labelKey as any))}
                 {opt.isActive(isParagraph, isActivated) && (
                   <span className="ml-auto flex items-center">
-                    <TickIcon className="h-5 w-5 text-icon-primary" />
+                    <TickIcon className="h-5 w-5 text-[var(--icon-secondary)]" />
                   </span>
                 )}
               </Button>

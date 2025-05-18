@@ -97,7 +97,6 @@ function ToolbarActions() {
         </>
       }
       {!isCodeBlock && <InlineCode />}
-      {/* {!isCodeBlock && !isAcrossBlock && <Formula />} */}
       {
         !isAcrossBlock && !isCodeBlock && <>
           <Divider
@@ -115,7 +114,14 @@ function ToolbarActions() {
         </>
       }
       {!isCodeBlock && <Align enabled={toolbarVisible} />}
-      {!isCodeBlock && <MoreOptions />}
+      {!isCodeBlock && <>
+        <Divider
+          className={'my-1.5 bg--border-primary'}
+          orientation={'vertical'}
+          flexItem={true}
+        />
+        <MoreOptions />
+      </>}
     </div>
   );
 }
