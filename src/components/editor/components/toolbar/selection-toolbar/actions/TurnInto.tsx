@@ -46,7 +46,7 @@ const blockOptions: BlockOption[] = [
     {
         type: 'heading1',
         icon: Heading1,
-        label: 'document.slashMenu.name.heading1',
+        label: 'toolbar.h1',
         blockType: BlockType.HeadingBlock,
         data: { level: 1 },
         group: 'text',
@@ -54,7 +54,7 @@ const blockOptions: BlockOption[] = [
     {
         type: 'heading2',
         icon: Heading2,
-        label: 'document.slashMenu.name.heading2',
+        label: 'toolbar.h2',
         blockType: BlockType.HeadingBlock,
         data: { level: 2 },
         group: 'text',
@@ -62,7 +62,7 @@ const blockOptions: BlockOption[] = [
     {
         type: 'heading3',
         icon: Heading3,
-        label: 'document.slashMenu.name.heading3',
+        label: 'toolbar.h3',
         blockType: BlockType.HeadingBlock,
         data: { level: 3 },
         group: 'text',
@@ -70,28 +70,28 @@ const blockOptions: BlockOption[] = [
     {
         type: 'bulleted',
         icon: BulletedListSvg,
-        label: 'toolbar.bulletList',
+        label: 'editor.bulletedListShortForm',
         blockType: BlockType.BulletedListBlock,
         group: 'list',
     },
     {
         type: 'numbered',
         icon: NumberedListSvg,
-        label: 'editor.numberedList',
+        label: 'editor.numberedListShortForm',
         blockType: BlockType.NumberedListBlock,
         group: 'list',
     },
     {
         type: 'toggle',
         icon: ToggleListIcon,
-        label: 'document.slashMenu.name.toggleList',
+        label: 'editor.toggleListShortForm',
         blockType: BlockType.ToggleListBlock,
         group: 'toggle',
     },
     {
         type: 'toggleHeading1',
         icon: ToggleHeading1Icon,
-        label: 'document.slashMenu.name.toggleHeading1',
+        label: 'editor.toggleHeading1ShortForm',
         blockType: BlockType.ToggleListBlock,
         data: { level: 1 },
         group: 'toggle',
@@ -99,7 +99,7 @@ const blockOptions: BlockOption[] = [
     {
         type: 'toggleHeading2',
         icon: ToggleHeading2Icon,
-        label: 'document.slashMenu.name.toggleHeading2',
+        label: 'editor.toggleHeading2ShortForm',
         blockType: BlockType.ToggleListBlock,
         data: { level: 2 },
         group: 'toggle',
@@ -107,7 +107,7 @@ const blockOptions: BlockOption[] = [
     {
         type: 'toggleHeading3',
         icon: ToggleHeading3Icon,
-        label: 'document.slashMenu.name.toggleHeading3',
+        label: 'editor.toggleHeading3ShortForm',
         blockType: BlockType.ToggleListBlock,
         data: { level: 3 },
         group: 'toggle',
@@ -115,7 +115,7 @@ const blockOptions: BlockOption[] = [
     {
         type: 'quote',
         icon: QuoteSvg,
-        label: 'toolbar.quote',
+        label: 'editor.quote',
         blockType: BlockType.QuoteBlock,
         group: 'other',
     },
@@ -305,7 +305,7 @@ function TurnInfo() {
                                 userSelect: 'none',
                             }}
                         >
-                            {t('toolbar.suggestion', { defaultValue: 'Suggestion' })}
+                            {t('toolbar.suggestions', { defaultValue: 'Suggestions' })}
                         </Typography>
                         {suggestionOptions.map((option, index) => (
                             <MenuItem
@@ -355,7 +355,7 @@ function TurnInfo() {
                         userSelect: 'none',
                     }}
                 >
-                    {t('document.plugins.optionAction.turnInto', { defaultValue: 'Turn into' })}
+                    {t('toolbar.turnInto', { defaultValue: 'Turn into' })}
                 </Typography>
                 {turnIntoOptions.map((option, index) => (
                     <MenuItem
