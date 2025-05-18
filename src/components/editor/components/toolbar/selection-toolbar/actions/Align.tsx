@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Element } from 'slate';
 import { useSlateStatic } from 'slate-react';
+import React from 'react';
 
 import { YjsEditor } from '@/application/slate-yjs';
 import { CustomEditor } from '@/application/slate-yjs/command';
@@ -35,11 +36,30 @@ const popoverProps: Partial<PopoverProps> = {
   },
 };
 
+const alignOptions = [
+  {
+    icon: <AlignLeftSvg className="h-5 w-5" />,
+    labelKey: 'toolbar.alignLeft',
+    type: AlignType.Left,
+  },
+  {
+    icon: <AlignCenterSvg className="h-5 w-5" />,
+    labelKey: 'toolbar.alignCenter',
+    type: AlignType.Center,
+  },
+  {
+    icon: <AlignRightSvg className="h-5 w-5" />,
+    labelKey: 'toolbar.alignRight',
+    type: AlignType.Right,
+  },
+];
+
 export function Align({ blockId, enabled = true }: { blockId?: string; enabled?: boolean }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLButtonElement | null>(null);
   const { t } = useTranslation();
   const editor = useSlateStatic() as YjsEditor;
+  const { rePosition } = useSelectionToolbarContext();
 
   const getNode = useCallback(() => {
     let node: Element;
@@ -56,7 +76,6 @@ export function Align({ blockId, enabled = true }: { blockId?: string; enabled?:
   const getAlign = useCallback(() => {
     try {
       const node = getNode();
-
       return (node.data as BlockData).align;
     } catch (e) {
       return;
@@ -73,32 +92,19 @@ export function Align({ blockId, enabled = true }: { blockId?: string; enabled?:
 
   const activeIcon = useCallback(() => {
     const align = getAlign();
-
-    switch (align) {
-      case AlignType.Left:
-        return <AlignLeftSvg className={'h-5 w-5 text-fill-default'} />;
-      case 'center':
-        return <AlignCenterSvg className={'h-5 w-5 text-fill-default'} />;
-      case 'right':
-        return <AlignRightSvg className={'h-5 w-5 text-fill-default'} />;
-      default:
-        return <AlignLeftSvg className={'h-5 w-5'} />;
-    }
+    const option = alignOptions.find(opt => opt.type === align) || alignOptions[0];
+    return React.cloneElement(option.icon, {
+      className: `h-5 w-5 ${align ? 'text-fill-default' : ''}`
+    });
   }, [getAlign]);
-
-  const { rePosition } = useSelectionToolbarContext();
 
   const toggleAlign = useCallback(
     (align: AlignType) => {
       return () => {
         try {
           const node = getNode();
-
-          CustomEditor.setBlockData(editor, node.blockId as string, {
-            align,
-          });
+          CustomEditor.setBlockData(editor, node.blockId as string, { align });
           handleClose();
-
           rePosition();
         } catch (e) {
           return;
@@ -109,12 +115,10 @@ export function Align({ blockId, enabled = true }: { blockId?: string; enabled?:
   );
 
   const { getButtonProps, selectedIndex } = useKeyboardNavigation({
-    itemCount: 3,
+    itemCount: alignOptions.length,
     isOpen: open,
     onSelect: (index) => {
-      const align = [AlignType.Left, AlignType.Center, AlignType.Right][index];
-
-      toggleAlign(align)();
+      toggleAlign(alignOptions[index].type)();
     },
     onClose: handleClose
   });
@@ -144,107 +148,47 @@ export function Align({ blockId, enabled = true }: { blockId?: string; enabled?:
         disableAutoFocus={true}
         disableEnforceFocus={true}
         disableRestoreFocus={true}
-        onClose={() => {
-          setOpen(false);
-        }}
+        onClose={handleClose}
         open={open && enabled}
         anchorEl={ref.current}
         {...popoverProps}
       >
         <div className="flex flex-col w-[200px] rounded-[12px]" style={{ padding: 'var(--spacing-spacing-m)' }}>
-          <Button
-            {...getButtonProps(0)}
-            startIcon={<AlignLeftSvg className="h-5 w-5" />}
-            color="inherit"
-            onClick={() => {
-              toggleAlign(AlignType.Left)();
-              setOpen(false);
-            }}
-            className="text-foreground"
-            disableRipple
-            sx={{
-              '.MuiButton-startIcon': {
-                margin: 0,
-                marginRight: 'var(--spacing-spacing-m)'
-              },
-              padding: '0 var(--spacing-spacing-m)',
-              height: '32px',
-              minHeight: '32px',
-              borderRadius: '8px',
-              justifyContent: 'flex-start',
-              textAlign: 'left',
-              ...(getAlign() === AlignType.Left && {
-                backgroundColor: 'var(--fill-list-active)'
-              }),
-              ...(selectedIndex === 0 && {
-                backgroundColor: 'var(--fill-list-hover)'
-              })
-            }}
-          >
-            {t('document.plugins.optionAction.left')}
-          </Button>
-          <Button
-            {...getButtonProps(1)}
-            startIcon={<AlignCenterSvg className="h-5 w-5" />}
-            color="inherit"
-            onClick={() => {
-              toggleAlign(AlignType.Center)();
-              setOpen(false);
-            }}
-            className="text-foreground"
-            disableRipple
-            sx={{
-              '.MuiButton-startIcon': {
-                margin: 0,
-                marginRight: 'var(--spacing-spacing-m)'
-              },
-              padding: '0 var(--spacing-spacing-m)',
-              height: '32px',
-              minHeight: '32px',
-              borderRadius: '8px',
-              justifyContent: 'flex-start',
-              textAlign: 'left',
-              ...(getAlign() === AlignType.Center && {
-                backgroundColor: 'var(--fill-list-active)'
-              }),
-              ...(selectedIndex === 1 && {
-                backgroundColor: 'var(--fill-list-hover)'
-              })
-            }}
-          >
-            {t('document.plugins.optionAction.center')}
-          </Button>
-          <Button
-            {...getButtonProps(2)}
-            startIcon={<AlignRightSvg className="h-5 w-5" />}
-            color="inherit"
-            onClick={() => {
-              toggleAlign(AlignType.Right)();
-              setOpen(false);
-            }}
-            className="text-foreground"
-            disableRipple
-            sx={{
-              '.MuiButton-startIcon': {
-                margin: 0,
-                marginRight: 'var(--spacing-spacing-m)'
-              },
-              padding: '0 var(--spacing-spacing-m)',
-              height: '32px',
-              minHeight: '32px',
-              borderRadius: '8px',
-              justifyContent: 'flex-start',
-              textAlign: 'left',
-              ...(getAlign() === AlignType.Right && {
-                backgroundColor: 'var(--fill-list-active)'
-              }),
-              ...(selectedIndex === 2 && {
-                backgroundColor: 'var(--fill-list-hover)'
-              })
-            }}
-          >
-            {t('document.plugins.optionAction.right')}
-          </Button>
+          {alignOptions.map((option, index) => (
+            <Button
+              key={option.labelKey}
+              {...getButtonProps(index)}
+              startIcon={option.icon}
+              color="inherit"
+              onClick={() => {
+                toggleAlign(option.type)();
+                setOpen(false);
+              }}
+              className="text-foreground"
+              disableRipple
+              sx={{
+                '.MuiButton-startIcon': {
+                  margin: 0,
+                  marginRight: 'var(--spacing-spacing-m)'
+                },
+                padding: '0 var(--spacing-spacing-m)',
+                height: '32px',
+                minHeight: '32px',
+                borderRadius: '8px',
+                justifyContent: 'flex-start',
+                textAlign: 'left',
+                fontWeight: 400,
+                ...(getAlign() === option.type && {
+                  backgroundColor: 'var(--fill-list-active)'
+                }),
+                ...(selectedIndex === index && {
+                  backgroundColor: 'var(--fill-list-hover)'
+                })
+              }}
+            >
+              {t(option.labelKey as any)}
+            </Button>
+          ))}
         </div>
       </Popover>
     </>
