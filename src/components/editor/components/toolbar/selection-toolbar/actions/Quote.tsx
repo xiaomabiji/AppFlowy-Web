@@ -10,8 +10,6 @@ import { ReactComponent as QuoteSvg } from '@/assets/icons/quote.svg';
 
 import ActionButton from './ActionButton';
 
-
-
 export function Quote() {
   const { t } = useTranslation();
   const editor = useSlateStatic() as YjsEditor;

@@ -6,7 +6,7 @@ import { useSlateStatic } from 'slate-react';
 import { YjsEditor } from '@/application/slate-yjs';
 import { CustomEditor } from '@/application/slate-yjs/command';
 import { getBlockEntry } from '@/application/slate-yjs/utils/editor';
-import { type HeadingBlockData, BlockType } from '@/application/types';
+import { type HeadingBlockData, BlockType, BlockData } from '@/application/types';
 import { ReactComponent as BulletedListSvg } from '@/assets/icons/bulleted_list.svg';
 import { ReactComponent as Heading1 } from '@/assets/icons/h1.svg';
 import { ReactComponent as Heading2 } from '@/assets/icons/h2.svg';
@@ -31,7 +31,7 @@ type BlockOption = {
     icon: FC<SVGProps<SVGSVGElement>>;
     label: string;
     blockType: BlockType;
-    data?: any;
+    data?: BlockData | HeadingBlockData;
     group: 'text' | 'list' | 'toggle' | 'other';
 };
 
@@ -121,6 +121,10 @@ const blockOptions: BlockOption[] = [
     },
 ];
 
+function isHeadingBlockData(data: BlockOption['data']): data is HeadingBlockData {
+    return !!data && typeof (data as HeadingBlockData).level === 'number';
+}
+
 function TurnInfo() {
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const [selectedType, setSelectedType] = useState<BlockOption['type'] | null>(null);
@@ -191,7 +195,7 @@ function TurnInfo() {
             if (!node) return;
 
             if (node.type === option.blockType &&
-                (!option.data || (node.type === BlockType.HeadingBlock && (node.data as HeadingBlockData).level === option.data.level))) {
+                (!option.data || (node.type === BlockType.HeadingBlock && isHeadingBlockData(option.data) && (node.data as HeadingBlockData).level === option.data.level))) {
                 CustomEditor.turnToBlock(editor, node.blockId as string, BlockType.Paragraph, {});
             } else {
                 CustomEditor.turnToBlock(editor, node.blockId as string, option.blockType, option.data || {});
@@ -240,14 +244,14 @@ function TurnInfo() {
         if (!currentType) return false;
         if (option.type === 'paragraph' && currentType === 'paragraph') return true;
         if (option.type.startsWith('heading') && currentType === 'heading') {
-            // heading1/2/3 匹配 level
-            return option.data && option.data.level === currentLevel;
+            // heading1/2/3 --- level
+            return isHeadingBlockData(option.data) && option.data.level === currentLevel;
         }
 
         if (option.type === 'bulleted' && currentType === 'bulleted') return true;
         if (option.type === 'numbered' && currentType === 'numbered') return true;
         if (option.type === 'toggle' && currentType === 'toggle') return true;
-        if (option.type.startsWith('toggleHeading') && currentType === 'toggle' && option.data && option.data.level === currentLevel) return true;
+        if (option.type.startsWith('toggleHeading') && currentType === 'toggle' && isHeadingBlockData(option.data) && option.data.level === currentLevel) return true;
         if (option.type === 'quote' && currentType === 'quote') return true;
         return false;
     }
@@ -310,7 +314,7 @@ function TurnInfo() {
                         {suggestionOptions.map((option, index) => (
                             <MenuItem
                                 key={option.type}
-                                ref={el => getButtonProps(index).ref?.(el as any)}
+                                ref={el => getButtonProps(index).ref?.(el as unknown as HTMLButtonElement)}
                                 selected={selectedIndex === index}
                                 className="text--text-primary"
                                 sx={{
@@ -360,7 +364,7 @@ function TurnInfo() {
                 {turnIntoOptions.map((option, index) => (
                     <MenuItem
                         key={option.type}
-                        ref={el => getButtonProps(index + suggestionOptions.length).ref?.(el as any)}
+                        ref={el => getButtonProps(index + suggestionOptions.length).ref?.(el as unknown as HTMLButtonElement)}
                         selected={selectedIndex === index + suggestionOptions.length}
                         className="text--text-primary"
                         sx={{

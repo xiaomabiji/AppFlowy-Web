@@ -12,17 +12,14 @@ import { ReactComponent as StrikeThroughSvg } from '@/assets/icons/strikethrough
 import Popover from '@/components/_shared/popover/Popover';
 
 import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
-
 import ActionButton from './ActionButton';
 import { useRef, useState } from 'react';
-
-
 
 const options = [
     {
         icon: <StrikeThroughSvg className="h-5 w-5" />,
-        labelKey: 'editor.strikethrough',
-        onClick: (editor: any, setOpen: (v: boolean) => void) => {
+        labelKey: 'editor.strikethrough' as const,
+        onClick: (editor: Editor, setOpen: (v: boolean) => void) => {
             CustomEditor.toggleMark(editor, {
                 key: EditorMarkFormat.StrikeThrough,
                 value: true,
@@ -32,8 +29,8 @@ const options = [
     },
     {
         icon: <FormulaSvg className="h-5 w-5" />,
-        labelKey: 'document.plugins.createInlineMathEquation',
-        onClick: (editor: any, setOpen: (v: boolean) => void) => {
+        labelKey: 'document.plugins.createInlineMathEquation' as const,
+        onClick: (editor: Editor, setOpen: (v: boolean) => void) => {
             const selection = editor.selection;
 
             if (!selection) return;
@@ -61,12 +58,12 @@ const options = [
             } else {
                 const [entry] = editor.nodes({
                     at: selection,
-                    match: (n: any) => !Editor.isEditor(n) && Text.isText(n) && (n as any).formula !== undefined,
+                    match: (n) => !Editor.isEditor(n) && Text.isText(n) && n.formula !== undefined,
                 });
 
                 if (!entry) return;
                 const [node, path] = entry;
-                const formula = (node).formula;
+                const { formula } = node as Text;
 
                 if (!formula) return;
                 editor.select(path);
@@ -162,7 +159,7 @@ export default function MoreOptions() {
                                 })
                             }}
                         >
-                            {t(opt.labelKey as any)}
+                            {t(opt.labelKey)}
                         </Button>
                     ))}
                 </div>

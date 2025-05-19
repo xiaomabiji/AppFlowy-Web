@@ -14,8 +14,6 @@ import { renderColor } from '@/utils/color';
 
 import ActionButton from './ActionButton';
 
-
-
 function Color() {
   const { t } = useTranslation();
   const { visible: toolbarVisible } = useSelectionToolbarContext();

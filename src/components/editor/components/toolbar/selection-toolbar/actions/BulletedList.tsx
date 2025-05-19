@@ -10,8 +10,6 @@ import { ReactComponent as BulletedListSvg } from '@/assets/icons/bulleted_list.
 
 import ActionButton from './ActionButton';
 
-
-
 export function BulletedList() {
   const { t } = useTranslation();
   const editor = useSlateStatic() as YjsEditor;

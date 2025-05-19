@@ -39,28 +39,38 @@ const popoverProps: Partial<PopoverProps> = {
   },
 };
 
+// Define allowed translation keys for heading options
+const headingLabelKeys = [
+  'editor.text',
+  'document.slashMenu.name.heading1',
+  'document.slashMenu.name.heading2',
+  'document.slashMenu.name.heading3',
+] as const;
+
+type HeadingLabelKey = typeof headingLabelKeys[number];
+
 const headingOptions = [
   {
     icon: <ParagraphSvg className="h-5 w-5" />,
-    labelKey: 'editor.text',
+    labelKey: 'editor.text' as HeadingLabelKey,
     isActive: (isParagraph: () => boolean, _isActivated: (level: number) => boolean) => isParagraph(),
     onClick: (toParagraph: () => void, _toHeading: (level: number) => () => void, setOpen: (v: boolean) => void) => () => { toParagraph(); setOpen(false); },
   },
   {
     icon: <Heading1 className="h-5 w-5" />,
-    labelKey: 'document.slashMenu.name.heading1',
+    labelKey: 'document.slashMenu.name.heading1' as HeadingLabelKey,
     isActive: (_isParagraph: () => boolean, isActivated: (level: number) => boolean) => isActivated(1),
     onClick: (_toParagraph: () => void, toHeading: (level: number) => () => void, setOpen: (v: boolean) => void) => () => { toHeading(1)(); setOpen(false); },
   },
   {
     icon: <Heading2 className="h-5 w-5" />,
-    labelKey: 'document.slashMenu.name.heading2',
+    labelKey: 'document.slashMenu.name.heading2' as HeadingLabelKey,
     isActive: (_isParagraph: () => boolean, isActivated: (level: number) => boolean) => isActivated(2),
     onClick: (_toParagraph: () => void, toHeading: (level: number) => () => void, setOpen: (v: boolean) => void) => () => { toHeading(2)(); setOpen(false); },
   },
   {
     icon: <Heading3 className="h-5 w-5" />,
-    labelKey: 'document.slashMenu.name.heading3',
+    labelKey: 'document.slashMenu.name.heading3' as HeadingLabelKey,
     isActive: (_isParagraph: () => boolean, isActivated: (level: number) => boolean) => isActivated(3),
     onClick: (_toParagraph: () => void, toHeading: (level: number) => () => void, setOpen: (v: boolean) => void) => () => { toHeading(3)(); setOpen(false); },
   },
@@ -211,7 +221,7 @@ export function Heading() {
                   })
                 }}
               >
-                {String(t(opt.labelKey as any))}
+                {t(opt.labelKey)}
                 {opt.isActive(isParagraph, isActivated) && (
                   <span className="ml-auto flex items-center">
                     <TickIcon className="h-5 w-5 text-[var(--icon-secondary)]" />

@@ -10,8 +10,6 @@ import { ReactComponent as NumberedListSvg } from '@/assets/icons/numbered_list.
 
 import ActionButton from './ActionButton';
 
-
-
 export function NumberedList() {
   const { t } = useTranslation();
   const editor = useSlateStatic() as YjsEditor;
