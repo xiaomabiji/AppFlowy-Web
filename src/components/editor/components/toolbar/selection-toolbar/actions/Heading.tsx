@@ -1,5 +1,4 @@
 import Button from '@mui/material/Button';
-import { PopoverProps } from '@mui/material/Popover';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSlateStatic } from 'slate-react';
@@ -15,29 +14,12 @@ import { ReactComponent as ParagraphSvg } from '@/assets/icons/text.svg';
 import { ReactComponent as TextFormatSvg } from '@/assets/icons/text_format.svg';
 import { ReactComponent as TickIcon } from '@/assets/icons/tick.svg';
 import { ReactComponent as DownArrow } from '@/assets/icons/triangle_down.svg';
-import { Popover } from '@/components/_shared/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useSelectionToolbarContext } from '@/components/editor/components/toolbar/selection-toolbar/SelectionToolbar.hooks';
 
 import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
 
 import ActionButton from './ActionButton';
-
-const popoverProps: Partial<PopoverProps> = {
-  anchorOrigin: {
-    vertical: 'bottom',
-    horizontal: 'center',
-  },
-  transformOrigin: {
-    vertical: 'top',
-    horizontal: 'center',
-  },
-  slotProps: {
-    paper: {
-      className: 'bg-[var(--surface-primary)] rounded-[8px]',
-      style: { marginTop: '6px' }
-    },
-  },
-};
 
 // Define allowed translation keys for heading options
 const headingLabelKeys = [
@@ -79,7 +61,7 @@ const headingOptions = [
 export function Heading() {
   const { t } = useTranslation();
   const editor = useSlateStatic() as YjsEditor;
-  const { visible: toolbarVisible } = useSelectionToolbarContext();
+  const { visible: toolbarVisible, forceShow } = useSelectionToolbarContext();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLButtonElement | null>(null);
 
@@ -164,74 +146,70 @@ export function Heading() {
 
   return (
     <div className={'flex items-center justify-center'}>
-
-      <ActionButton
-        ref={ref}
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          setOpen(true);
-        }}
-        tooltip={t('editor.text')}
-      >
-        <div className={'flex items-center justify-center gap-1'}>
-          <TextFormatSvg className='h-5 w-5' />
-          <DownArrow className={'h-5 w-3 text-icon-tertiary'} />
-        </div>
-      </ActionButton>
-      {toolbarVisible && (
-        <Popover
-          disableAutoFocus={true}
-          disableEnforceFocus={true}
-          disableRestoreFocus={true}
-          onClose={() => {
-            setOpen(false);
-          }}
-          open={open}
-          anchorEl={ref.current}
-          {...popoverProps}
-        >
-          <div className="flex flex-col w-[200px] rounded-[12px]" style={{ padding: 'var(--spacing-spacing-m)' }}>
-            {headingOptions.map((opt, idx) => (
-              <Button
-                key={opt.labelKey}
-                {...getButtonProps(idx)}
-                startIcon={opt.icon}
-                color="inherit"
-                onClick={opt.onClick(toParagraph, toHeading, setOpen)}
-                disableRipple
-                className="text-text-primary"
-                sx={{
-                  '.MuiButton-startIcon': {
-                    margin: 0,
-                    marginRight: 'var(--spacing-spacing-m)'
-                  },
-                  padding: '0 var(--spacing-spacing-m)',
-                  height: '32px',
-                  minHeight: '32px',
-                  borderRadius: '8px',
-                  justifyContent: 'flex-start',
-                  textAlign: 'left',
-                  fontSize: '14px',
-                  fontStyle: 'normal',
-                  fontWeight: 400,
-                  lineHeight: '20px',
-                  ...(selectedIndex === idx && {
-                    backgroundColor: 'var(--fill-list-hover)'
-                  })
-                }}
-              >
-                {t(opt.labelKey)}
-                {opt.isActive(isParagraph, isActivated) && (
-                  <span className="ml-auto flex items-center">
-                    <TickIcon className="h-5 w-5 text-[var(--icon-secondary)]" />
-                  </span>
-                )}
-              </Button>
-            ))}
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <div>
+            <ActionButton
+              ref={ref}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setOpen(true);
+                forceShow(true);
+              }}
+              tooltip={t('editor.text')}
+            >
+              <div className={'flex items-center justify-center gap-1'}>
+                <TextFormatSvg className='h-5 w-5' />
+                <DownArrow className={'h-5 w-3 text-icon-tertiary'} />
+              </div>
+            </ActionButton>
           </div>
-        </Popover>
-      )}
+        </PopoverTrigger>
+        {toolbarVisible && (
+          <PopoverContent className="w-[200px] p-4" align="start" sideOffset={5}>
+            <div className="flex flex-col gap-1">
+              {headingOptions.map((opt, idx) => (
+                <Button
+                  key={opt.labelKey}
+                  {...getButtonProps(idx)}
+                  startIcon={opt.icon}
+                  color="inherit"
+                  className={`justify-start ${opt.isActive(isParagraph, isActivated) ? 'bg-fill-list-active' : ''}`}
+                  onClick={opt.onClick(toParagraph, toHeading, setOpen)}
+                  disableRipple
+                  sx={{
+                    '.MuiButton-startIcon': {
+                      margin: 0,
+                      marginRight: 'var(--spacing-spacing-m)'
+                    },
+                    padding: '0 var(--spacing-spacing-m)',
+                    height: '32px',
+                    minHeight: '32px',
+                    borderRadius: '8px',
+                    justifyContent: 'flex-start',
+                    textAlign: 'left',
+                    fontSize: '14px',
+                    fontStyle: 'normal',
+                    fontWeight: 400,
+                    lineHeight: '20px',
+                    ...(selectedIndex === idx && {
+                      backgroundColor: 'var(--fill-list-hover)'
+                    })
+                  }}
+                >
+                  {t(opt.labelKey)}
+                  {opt.isActive(isParagraph, isActivated) && (
+                    <span className="ml-auto flex items-center">
+                      <TickIcon className="h-5 w-5 text-[var(--icon-secondary)]" />
+                    </span>
+                  )}
+                </Button>
+              ))}
+            </div>
+          </PopoverContent>
+        )}
+      </Popover>
     </div>
   );
 }
