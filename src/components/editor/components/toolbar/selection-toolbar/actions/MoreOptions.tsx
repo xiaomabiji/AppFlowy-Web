@@ -1,5 +1,4 @@
 import { Button } from '@mui/material';
-import { PopoverProps } from '@mui/material/Popover';
 import { useTranslation } from 'react-i18next';
 import { Editor, Text, Transforms } from 'slate';
 import { useSlate } from 'slate-react';
@@ -9,7 +8,8 @@ import { EditorMarkFormat } from '@/application/slate-yjs/types';
 import { ReactComponent as FormulaSvg } from '@/assets/icons/formula.svg';
 import { ReactComponent as MoreIcon } from '@/assets/icons/more.svg';
 import { ReactComponent as StrikeThroughSvg } from '@/assets/icons/strikethrough.svg';
-import Popover from '@/components/_shared/popover/Popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useSelectionToolbarContext } from '@/components/editor/components/toolbar/selection-toolbar/SelectionToolbar.hooks';
 
 import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
 import ActionButton from './ActionButton';
@@ -77,28 +77,12 @@ const options = [
     },
 ];
 
-const popoverProps: Partial<PopoverProps> = {
-    anchorOrigin: {
-        vertical: 'bottom',
-        horizontal: 'center',
-    },
-    transformOrigin: {
-        vertical: 'top',
-        horizontal: 'center',
-    },
-    slotProps: {
-        paper: {
-            className: 'bg-[var(--surface-primary)] rounded-[8px]',
-            style: { marginTop: '6px' }
-        },
-    },
-};
-
 export default function MoreOptions() {
     const [open, setOpen] = useState(false);
     const ref = useRef<HTMLButtonElement | null>(null);
     const { t } = useTranslation();
     const editor = useSlate();
+    const { forceShow } = useSelectionToolbarContext();
 
     const { getButtonProps, selectedIndex } = useKeyboardNavigation({
         itemCount: options.length,
@@ -108,28 +92,25 @@ export default function MoreOptions() {
     });
 
     return (
-        <>
-            <ActionButton
-                ref={ref}
-                onClick={e => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setOpen(true);
-                }}
-                tooltip={t('toolbar.moreOptions', { defaultValue: 'More options' })}
-            >
-                <MoreIcon className='h-5 w-5' />
-            </ActionButton>
-            <Popover
-                disableAutoFocus={true}
-                disableEnforceFocus={true}
-                disableRestoreFocus={true}
-                onClose={() => setOpen(false)}
-                open={open}
-                anchorEl={ref.current}
-                {...popoverProps}
-            >
-                <div className="flex flex-col w-[200px] rounded-[12px]" style={{ padding: 'var(--spacing-spacing-m)' }}>
+        <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+                <div>
+                    <ActionButton
+                        ref={ref}
+                        onClick={e => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setOpen(true);
+                            forceShow(true);
+                        }}
+                        tooltip={t('toolbar.moreOptions', { defaultValue: 'More options' })}
+                    >
+                        <MoreIcon className='h-5 w-5' />
+                    </ActionButton>
+                </div>
+            </PopoverTrigger>
+            <PopoverContent className="w-[200px] p-4" align="start" sideOffset={5}>
+                <div className="flex flex-col gap-1">
                     {options.map((opt, idx) => (
                         <Button
                             key={opt.labelKey}
@@ -138,7 +119,6 @@ export default function MoreOptions() {
                             color="inherit"
                             onClick={() => opt.onClick(editor, setOpen)}
                             disableRipple
-                            className="text-text-primary"
                             sx={{
                                 '.MuiButton-startIcon': {
                                     margin: 0,
@@ -163,7 +143,7 @@ export default function MoreOptions() {
                         </Button>
                     ))}
                 </div>
-            </Popover>
-        </>
+            </PopoverContent>
+        </Popover>
     );
 } 
