@@ -11,15 +11,14 @@ import { ReactComponent as Heading2 } from '@/assets/icons/h2.svg';
 import { ReactComponent as Heading3 } from '@/assets/icons/h3.svg';
 import { ReactComponent as ParagraphSvg } from '@/assets/icons/text.svg';
 import { ReactComponent as TextFormatSvg } from '@/assets/icons/text_format.svg';
-import { ReactComponent as TickIcon } from '@/assets/icons/tick.svg';
 import { ReactComponent as DownArrow } from '@/assets/icons/triangle_down.svg';
-import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useSelectionToolbarContext } from '@/components/editor/components/toolbar/selection-toolbar/SelectionToolbar.hooks';
 
 import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
 
 import ActionButton from './ActionButton';
+import { MenuButton } from './MenuButton';
 
 // Define allowed translation keys for heading options
 const headingLabelKeys = [
@@ -170,31 +169,15 @@ export function Heading() {
           <PopoverContent className="w-[200px] p-2" align="start" sideOffset={5}>
             <div className="flex flex-col gap-1">
               {headingOptions.map((opt, idx) => (
-                <Button
+                <MenuButton
                   key={opt.labelKey}
-                  {...getButtonProps(idx)}
-                  variant="ghost"
-                  className={`
-                    h-8 min-h-8 px-[var(--spacing-spacing-m)]
-                    flex items-center justify-start
-                    text-sm font-normal leading-5
-                    hover:bg-[var(--fill-list-hover)]
-                    focus-visible:outline-none
-                    focus-visible:ring-0
-                    focus:outline-none
-                    focus:border-0
-                    ${selectedIndex === idx ? 'bg-[var(--fill-list-hover)]' : ''}
-                  `}
-                  onClick={opt.onClick(toParagraph, toHeading, setOpen)}
-                >
-                  <span className="mr-[var(--spacing-spacing-m)]">{opt.icon}</span>
-                  {t(opt.labelKey)}
-                  {opt.isActive(isParagraph, isActivated) && (
-                    <span className="ml-auto flex items-center">
-                      <TickIcon className="h-5 w-5 text-[var(--icon-secondary)]" />
-                    </span>
-                  )}
-                </Button>
+                  icon={opt.icon}
+                  label={t(opt.labelKey)}
+                  isActive={opt.isActive(isParagraph, isActivated)}
+                  onClick={() => opt.onClick(toParagraph, toHeading, setOpen)}
+                  selected={selectedIndex === idx}
+                  buttonProps={getButtonProps(idx)}
+                />
               ))}
             </div>
           </PopoverContent>

@@ -7,14 +7,13 @@ import { EditorMarkFormat } from '@/application/slate-yjs/types';
 import { ReactComponent as FormulaSvg } from '@/assets/icons/formula.svg';
 import { ReactComponent as MoreIcon } from '@/assets/icons/more.svg';
 import { ReactComponent as StrikeThroughSvg } from '@/assets/icons/strikethrough.svg';
-import { ReactComponent as TickIcon } from '@/assets/icons/tick.svg';
-import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useSelectionToolbarContext } from '@/components/editor/components/toolbar/selection-toolbar/SelectionToolbar.hooks';
 
 import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
 import ActionButton from './ActionButton';
 import { useRef, useState } from 'react';
+import { MenuButton } from './MenuButton';
 
 const options = [
     {
@@ -115,31 +114,15 @@ export default function MoreOptions() {
             <PopoverContent className="w-[200px] p-2" align="start" sideOffset={5}>
                 <div className="flex flex-col gap-1">
                     {options.map((opt, idx) => (
-                        <Button
+                        <MenuButton
                             key={opt.labelKey}
-                            {...getButtonProps(idx)}
-                            variant="ghost"
-                            className={`
-                                h-8 min-h-8 px-[var(--spacing-spacing-m)]
-                                flex items-center justify-start
-                                text-sm font-normal leading-5
-                                hover:bg-[var(--fill-list-hover)]
-                                focus-visible:outline-none
-                                focus-visible:ring-0
-                                focus:outline-none
-                                focus:border-0
-                                ${selectedIndex === idx ? 'bg-[var(--fill-list-hover)]' : ''}
-                            `}
+                            icon={opt.icon}
+                            label={t(opt.labelKey)}
+                            isActive={opt.isActive(editor)}
                             onClick={() => opt.onClick(editor, setOpen)}
-                        >
-                            <span className="mr-2">{opt.icon}</span>
-                            {t(opt.labelKey)}
-                            {opt.isActive(editor) && (
-                                <span className="ml-auto flex items-center">
-                                    <TickIcon className="h-5 w-5 text-[var(--icon-secondary)]" />
-                                </span>
-                            )}
-                        </Button>
+                            selected={selectedIndex === idx}
+                            buttonProps={getButtonProps(idx)}
+                        />
                     ))}
                 </div>
             </PopoverContent>
