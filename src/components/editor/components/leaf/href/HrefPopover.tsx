@@ -298,7 +298,7 @@ function HrefPopover({
       transformOrigin={defaultOrigin}
       slotProps={{
         paper: {
-          className: 'p-4 min-w-[360px] bg-[var(--surface-primary)]',
+          className: 'p-4 min-w-[360px]',
           ref: paperRef,
         },
       }}

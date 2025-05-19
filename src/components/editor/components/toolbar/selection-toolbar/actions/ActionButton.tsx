@@ -27,8 +27,8 @@ const ActionButton = forwardRef<
         {...props}
         className={cn(
           className,
-          'bg-transparent px-1.5 py-1.5 text-icon-primary hover:bg-[var(--fill-content-hover)]',
-          active && 'bg-[var(--fill-theme-select)]'
+          'bg-transparent px-1.5 py-1.5 text-icon-primary hover:bg-fill-content-hover',
+          active && 'bg-fill-theme-select'
         )}
       >
         <div className="min-w-5 h-5 flex items-center justify-center">

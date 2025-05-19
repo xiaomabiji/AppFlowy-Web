@@ -119,7 +119,7 @@ function ColorHighlight() {
 
     const popoverContent = useMemo(() => {
         return (
-            <div className={'flex w-[200px] flex-col gap-3 p-3 bg-[var(--surface-primary)]'}>
+            <div className={'flex w-[200px] flex-col gap-3 p-3 bg-surface-primary'}>
                 <div className={'flex flex-col gap-2'}>
                     <div className={'text-xs text-text-caption'}>{t('editor.backgroundColor')}</div>
                     <div className={'flex flex-wrap gap-1.5'}>
