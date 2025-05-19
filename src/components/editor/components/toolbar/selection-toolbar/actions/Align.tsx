@@ -1,5 +1,3 @@
-import Button from '@mui/material/Button';
-import { PopoverProps } from '@mui/material/Popover';
 import { cloneElement, useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Element } from 'slate';
@@ -12,28 +10,12 @@ import { AlignType, BlockData } from '@/application/types';
 import { ReactComponent as AlignCenterSvg } from '@/assets/icons/align_center.svg';
 import { ReactComponent as AlignLeftSvg } from '@/assets/icons/align_left.svg';
 import { ReactComponent as AlignRightSvg } from '@/assets/icons/align_right.svg';
-import { Popover } from '@/components/_shared/popover';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useSelectionToolbarContext } from '@/components/editor/components/toolbar/selection-toolbar/SelectionToolbar.hooks';
 
 import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
-
 import ActionButton from './ActionButton';
-
-const popoverProps: Partial<PopoverProps> = {
-  anchorOrigin: {
-    vertical: 'bottom',
-    horizontal: 'center',
-  },
-  transformOrigin: {
-    vertical: -8,
-    horizontal: 'center',
-  },
-  slotProps: {
-    paper: {
-      className: 'bg-[var(--surface-primary)] rounded-[6px]',
-    },
-  },
-};
+import { MenuButton } from './MenuButton';
 
 // Define allowed translation keys for align options
 const alignLabelKeys = [
@@ -67,7 +49,7 @@ export function Align({ blockId, enabled = true }: { blockId?: string; enabled?:
   const ref = useRef<HTMLButtonElement | null>(null);
   const { t } = useTranslation();
   const editor = useSlateStatic() as YjsEditor;
-  const { rePosition } = useSelectionToolbarContext();
+  const { rePosition, forceShow } = useSelectionToolbarContext();
 
   const getNode = useCallback(() => {
     let node: Element;
@@ -93,18 +75,20 @@ export function Align({ blockId, enabled = true }: { blockId?: string; enabled?:
 
   const handleClose = useCallback(() => {
     setOpen(false);
-  }, []);
+    forceShow(false);
+  }, [forceShow]);
 
   const handleOpen = useCallback(() => {
     setOpen(true);
-  }, []);
+    forceShow(true);
+  }, [forceShow]);
 
   const activeIcon = useCallback(() => {
     const align = getAlign();
     const option = alignOptions.find(opt => opt.type === align) || alignOptions[0];
 
     return cloneElement(option.icon, {
-      className: `h-5 w-5 ${align ? 'text-fill-default' : ''}`
+      className: 'h-5 w-5'
     });
   }, [getAlign]);
 
@@ -142,65 +126,38 @@ export function Align({ blockId, enabled = true }: { blockId?: string; enabled?:
 
   return (
     <>
-      <ActionButton
-        ref={ref}
-        onClick={(e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          handleOpen();
-        }}
-        tooltip={t('document.plugins.optionAction.align')}
-      >
-        {activeIcon()}
-      </ActionButton>
-
-      <Popover
-        keepMounted={false}
-        disableAutoFocus={true}
-        disableEnforceFocus={true}
-        disableRestoreFocus={true}
-        onClose={handleClose}
-        open={open && enabled}
-        anchorEl={ref.current}
-        {...popoverProps}
-      >
-        <div className="flex flex-col w-[200px] rounded-[12px]" style={{ padding: 'var(--spacing-spacing-m)' }}>
-          {alignOptions.map((option, index) => (
-            <Button
-              key={option.labelKey}
-              {...getButtonProps(index)}
-              startIcon={option.icon}
-              color="inherit"
-              onClick={() => {
-                toggleAlign(option.type)();
-                setOpen(false);
-              }}
-              className="text-foreground"
-              disableRipple
-              sx={{
-                '.MuiButton-startIcon': {
-                  margin: 0,
-                  marginRight: 'var(--spacing-spacing-m)'
-                },
-                padding: '0 var(--spacing-spacing-m)',
-                height: '32px',
-                minHeight: '32px',
-                borderRadius: '8px',
-                justifyContent: 'flex-start',
-                textAlign: 'left',
-                fontWeight: 400,
-                ...(getAlign() === option.type && {
-                  backgroundColor: 'var(--fill-list-active)'
-                }),
-                ...(selectedIndex === index && {
-                  backgroundColor: 'var(--fill-list-hover)'
-                })
-              }}
-            >
-              {t(option.labelKey)}
-            </Button>
-          ))}
-        </div>
+      <Popover open={open && enabled} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <ActionButton
+            ref={ref}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              handleOpen();
+            }}
+            tooltip={t('document.plugins.optionAction.align')}
+          >
+            {activeIcon()}
+          </ActionButton>
+        </PopoverTrigger>
+        <PopoverContent className="w-[200px] p-2 bg-surface-primary rounded-[6px]">
+          <div className="flex flex-col rounded-[12px]">
+            {alignOptions.map((option, index) => (
+              <MenuButton
+                key={option.labelKey}
+                icon={option.icon}
+                label={t(option.labelKey)}
+                isActive={getAlign() === option.type}
+                onClick={() => {
+                  toggleAlign(option.type)();
+                  handleClose();
+                }}
+                selected={selectedIndex === index}
+                buttonProps={getButtonProps(index)}
+              />
+            ))}
+          </div>
+        </PopoverContent>
       </Popover>
     </>
   );

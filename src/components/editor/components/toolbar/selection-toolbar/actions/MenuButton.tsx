@@ -27,7 +27,7 @@ export function MenuButton({ icon, label, isActive, onClick, selected, buttonPro
             `}
             onClick={onClick}
         >
-            <span className="mr-2">{icon}</span>
+            <span className="mr-1">{icon}</span>
             {label}
             {isActive && (
                 <span className="ml-auto flex items-center">
