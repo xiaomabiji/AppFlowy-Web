@@ -1,4 +1,3 @@
-import { Menu, MenuItem, Typography } from '@mui/material';
 import { FC, SVGProps, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSlateStatic } from 'slate-react';
@@ -14,17 +13,17 @@ import { ReactComponent as Heading3 } from '@/assets/icons/h3.svg';
 import { ReactComponent as NumberedListSvg } from '@/assets/icons/numbered_list.svg';
 import { ReactComponent as QuoteSvg } from '@/assets/icons/quote.svg';
 import { ReactComponent as ParagraphSvg } from '@/assets/icons/text.svg';
-import { ReactComponent as TickIcon } from '@/assets/icons/tick.svg';
 import { ReactComponent as ToggleHeading1Icon } from '@/assets/icons/toggle_h1.svg';
 import { ReactComponent as ToggleHeading2Icon } from '@/assets/icons/toggle_h2.svg';
 import { ReactComponent as ToggleHeading3Icon } from '@/assets/icons/toggle_h3.svg';
 import { ReactComponent as ToggleListIcon } from '@/assets/icons/toggle_list.svg';
 import { ReactComponent as DownArrow } from '@/assets/icons/triangle_down.svg';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useSelectionToolbarContext } from '@/components/editor/components/toolbar/selection-toolbar/SelectionToolbar.hooks';
 
 import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
-import { useSelectionToolbarContext } from '../SelectionToolbar.hooks';
-
 import ActionButton from './ActionButton';
+import { MenuButton } from './MenuButton';
 
 type BlockOption = {
     type: 'paragraph' | 'heading1' | 'heading2' | 'heading3' | 'quote' | 'bulleted' | 'numbered' | 'toggleHeading1' | 'toggleHeading2' | 'toggleHeading3' | 'toggle';
@@ -126,17 +125,11 @@ function isHeadingBlockData(data: BlockOption['data']): data is HeadingBlockData
 }
 
 function TurnInfo() {
-    const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-    const [selectedType, setSelectedType] = useState<BlockOption['type'] | null>(null);
-    const ref = useRef<HTMLButtonElement | null>(null);
+    const [open, setOpen] = useState(false);
+    const ref = useRef<HTMLButtonElement>(null);
     const editor = useSlateStatic() as YjsEditor;
     const { t } = useTranslation();
-    const { forceShow } = useSelectionToolbarContext();
-    const open = Boolean(anchorEl);
-    const handleClose = () => {
-        setAnchorEl(null);
-        forceShow(false);
-    };
+    const { visible, forceShow } = useSelectionToolbarContext();
 
     // Helper: get current block type and heading level
     let currentType: string | null = null;
@@ -146,30 +139,32 @@ function TurnInfo() {
     try {
         const [node] = getBlockEntry(editor);
 
-        if (node.type === BlockType.Paragraph) {
-            currentType = 'paragraph';
-            currentGroup = 'text';
-        }
-        else if (node.type === BlockType.HeadingBlock) {
-            currentType = 'heading';
-            currentLevel = (node.data as HeadingBlockData).level;
-            currentGroup = 'text';
-        }
-        else if (node.type === BlockType.QuoteBlock) {
-            currentType = 'quote';
-            currentGroup = 'other';
-        }
-        else if (node.type === BlockType.BulletedListBlock) {
-            currentType = 'bulleted';
-            currentGroup = 'list';
-        }
-        else if (node.type === BlockType.NumberedListBlock) {
-            currentType = 'numbered';
-            currentGroup = 'list';
-        }
-        else if (node.type === BlockType.ToggleListBlock) {
-            currentType = 'toggle';
-            currentGroup = 'toggle';
+        switch (node.type) {
+            case BlockType.Paragraph:
+                currentType = 'paragraph';
+                currentGroup = 'text';
+                break;
+            case BlockType.HeadingBlock:
+                currentType = 'heading';
+                currentLevel = (node.data as HeadingBlockData).level;
+                currentGroup = 'text';
+                break;
+            case BlockType.QuoteBlock:
+                currentType = 'quote';
+                currentGroup = 'other';
+                break;
+            case BlockType.BulletedListBlock:
+                currentType = 'bulleted';
+                currentGroup = 'list';
+                break;
+            case BlockType.NumberedListBlock:
+                currentType = 'numbered';
+                currentGroup = 'list';
+                break;
+            case BlockType.ToggleListBlock:
+                currentType = 'toggle';
+                currentGroup = 'toggle';
+                break;
         }
     } catch (e) { }
 
@@ -183,9 +178,7 @@ function TurnInfo() {
         if (currentType === 'bulleted') return t('toolbar.bulletList', { returnObjects: false, defaultValue: 'Bulleted List' });
         if (currentType === 'numbered') return t('toolbar.numberedList', { returnObjects: false, defaultValue: 'Numbered List' });
 
-        const option = blockOptions.find(opt => opt.type === selectedType);
-
-        return option ? t(option.label, { defaultValue: option.label }) : 'Text';
+        return 'Text';
     };
 
     const handleBlockChange = (option: BlockOption) => {
@@ -200,10 +193,8 @@ function TurnInfo() {
             } else {
                 CustomEditor.turnToBlock(editor, node.blockId as string, option.blockType, option.data || {});
             }
-
-            setSelectedType(option.type);
-            handleClose();
-        } catch (e) { handleClose(); }
+            setOpen(false);
+        } catch (e) { setOpen(false); }
     };
 
     const getSuggestionOptions = () => {
@@ -234,17 +225,15 @@ function TurnInfo() {
         isOpen: open,
         onSelect: (index) => {
             const options = [...suggestionOptions, ...turnIntoOptions];
-
             handleBlockChange(options[index]);
         },
-        onClose: handleClose,
+        onClose: () => setOpen(false)
     });
 
     function isOptionActive(option: BlockOption, currentType: string | null, currentLevel: number | null) {
         if (!currentType) return false;
         if (option.type === 'paragraph' && currentType === 'paragraph') return true;
         if (option.type.startsWith('heading') && currentType === 'heading') {
-            // heading1/2/3 --- level
             return isHeadingBlockData(option.data) && option.data.level === currentLevel;
         }
 
@@ -258,143 +247,75 @@ function TurnInfo() {
 
     return (
         <div className={'flex items-center justify-center'}>
-            <ActionButton
-                ref={ref}
-                onClick={e => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setAnchorEl(e.currentTarget as HTMLElement);
-                    forceShow(true);
-                }}
-                tooltip={getDisplayText()}
-            >
-                <div className={'flex items-center justify-center gap-1 '}>
-                    <span
-                        className={'max-w-[120px] truncate text-text-primary'}
-                        style={{
-                            fontSize: 14,
-                            fontStyle: 'normal',
-                            fontWeight: 400,
-                            lineHeight: '20px',
-                        }}
-                    >
-                        {getDisplayText()}
-                    </span>
-                    <DownArrow className={'h-5 w-3 text-icon-tertiary'} />
-                </div>
-            </ActionButton>
-            <Menu
-                anchorEl={anchorEl}
-                open={open}
-                onClose={handleClose}
-                anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
-                transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-                PaperProps={{
-                    className: 'bg-[var(--surface-primary)] rounded-[8px]',
-                    style: { marginTop: '6px', minWidth: 200, paddingLeft: 'var(--spacing-spacing-m)', paddingRight: 'var(--spacing-spacing-m)' }
-                }}
-            >
-                {suggestionOptions.length > 0 && (
-                    <>
-                        <Typography
-                            className='text-text-secondary'
-                            variant="body2"
-                            sx={{
-                                fontSize: 12,
-                                fontWeight: 600,
-                                lineHeight: '20px',
-                                px: 1.5,
-                                py: 0.5,
-                                pointerEvents: 'none',
-                                userSelect: 'none',
+            <Popover open={open} onOpenChange={setOpen}>
+                <PopoverTrigger asChild>
+                    <div>
+                        <ActionButton
+                            ref={ref}
+                            onClick={e => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setOpen(true);
+                                forceShow(true);
                             }}
+                            tooltip={getDisplayText()}
                         >
-                            {t('toolbar.suggestions', { defaultValue: 'Suggestions' })}
-                        </Typography>
-                        {suggestionOptions.map((option, index) => (
-                            <MenuItem
-                                key={option.type}
-                                ref={el => getButtonProps(index).ref?.(el as unknown as HTMLButtonElement)}
-                                selected={selectedIndex === index}
-                                className="text--text-primary"
-                                sx={{
-                                    ...getButtonProps(index).sx,
-                                    fontSize: '14px',
-                                    fontStyle: 'normal',
-                                    fontWeight: 400,
-                                    lineHeight: '20px',
-                                    '&.Mui-selected, &.Mui-selected:hover': {
-                                        backgroundColor: 'var(--fill-list-hover) !important',
-                                        color: 'inherit',
-                                    },
-                                    '&:hover': {
-                                        backgroundColor: 'var(--fill-list-hover)',
-                                    },
-                                }}
-                                onClick={() => handleBlockChange(option)}
-                            >
-                                <option.icon className="h-5 w-5 mr-2 text-text-primary" />
-                                <span className="text-text-primary">
-                                    {t(option.label, { defaultValue: option.label })}
+                            <div className={'flex items-center justify-center gap-1 '}>
+                                <span
+                                    className={'max-w-[120px] truncate text-text-primary'}
+                                    style={{
+                                        fontSize: 14,
+                                        fontStyle: 'normal',
+                                        fontWeight: 400,
+                                        lineHeight: '20px',
+                                    }}
+                                >
+                                    {getDisplayText()}
                                 </span>
-                                {isOptionActive(option, currentType, currentLevel) && (
-                                    <span className="ml-auto flex items-center">
-                                        <TickIcon className="h-5 w-5 text-icon-primary" />
-                                    </span>
-                                )}
-                            </MenuItem>
-                        ))}
-                    </>
+                                <DownArrow className={'h-5 w-3 text-icon-tertiary'} />
+                            </div>
+                        </ActionButton>
+                    </div>
+                </PopoverTrigger>
+                {visible && (
+                    <PopoverContent className="w-[200px] p-2" align="start" sideOffset={5}>
+                        <div className="flex flex-col gap-1">
+                            {suggestionOptions.length > 0 && (
+                                <>
+                                    <div className="text-xs font-semibold text-text-secondary px-3 py-1 pointer-events-none select-none">
+                                        {t('toolbar.suggestions', { defaultValue: 'Suggestions' })}
+                                    </div>
+                                    {suggestionOptions.map((option, idx) => (
+                                        <MenuButton
+                                            key={option.type}
+                                            icon={<option.icon className="h-5 w-5" />}
+                                            label={t(option.label, { defaultValue: option.label })}
+                                            isActive={isOptionActive(option, currentType, currentLevel)}
+                                            onClick={() => handleBlockChange(option)}
+                                            selected={selectedIndex === idx}
+                                            buttonProps={getButtonProps(idx)}
+                                        />
+                                    ))}
+                                </>
+                            )}
+                            <div className="text-xs font-semibold text-text-secondary px-3 py-1 pointer-events-none select-none">
+                                {t('toolbar.turnInto', { defaultValue: 'Turn into' })}
+                            </div>
+                            {turnIntoOptions.map((option, idx) => (
+                                <MenuButton
+                                    key={option.type}
+                                    icon={<option.icon className="h-5 w-5" />}
+                                    label={t(option.label, { defaultValue: option.label })}
+                                    isActive={isOptionActive(option, currentType, currentLevel)}
+                                    onClick={() => handleBlockChange(option)}
+                                    selected={selectedIndex === idx + suggestionOptions.length}
+                                    buttonProps={getButtonProps(idx + suggestionOptions.length)}
+                                />
+                            ))}
+                        </div>
+                    </PopoverContent>
                 )}
-                <Typography
-                    className='text-text-secondary'
-                    variant="body2"
-                    sx={{
-                        fontSize: 12,
-                        fontWeight: 600,
-                        lineHeight: '20px',
-                        px: 1.5,
-                        py: 0.5,
-                        pointerEvents: 'none',
-                        userSelect: 'none',
-                    }}
-                >
-                    {t('toolbar.turnInto', { defaultValue: 'Turn into' })}
-                </Typography>
-                {turnIntoOptions.map((option, index) => (
-                    <MenuItem
-                        key={option.type}
-                        ref={el => getButtonProps(index + suggestionOptions.length).ref?.(el as unknown as HTMLButtonElement)}
-                        selected={selectedIndex === index + suggestionOptions.length}
-                        className="text--text-primary"
-                        sx={{
-                            ...getButtonProps(index + suggestionOptions.length).sx,
-                            fontSize: '14px',
-                            fontStyle: 'normal',
-                            fontWeight: 400,
-                            lineHeight: '20px',
-                            '&.Mui-selected, &.Mui-selected:hover': {
-                                backgroundColor: 'var(--fill-list-hover) !important',
-                                color: 'inherit',
-                            },
-                            '&:hover': {
-                                backgroundColor: 'var(--fill-list-hover)',
-                            },
-                        }}
-                        onClick={() => handleBlockChange(option)}
-                    >
-                        <option.icon className="h-5 w-5 mr-2 text-text-primary" />
-                        <span className="text-text-primary">
-                            {t(option.label, { defaultValue: option.label })}
-                        </span>
-                        {isOptionActive(option, currentType, currentLevel) && (
-                            <span className="ml-auto flex items-center">
-                                <TickIcon className="h-5 w-5 text-icon-primary" />
-                            </span>
-                        )}
-                    </MenuItem>
-                ))}
-            </Menu>
+            </Popover>
         </div>
     );
 }
