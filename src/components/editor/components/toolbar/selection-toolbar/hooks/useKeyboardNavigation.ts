@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { createHotkey,HOT_KEY_NAME } from '@/utils/hotkeys';
+import { createHotkey, HOT_KEY_NAME } from '@/utils/hotkeys';
 
 interface UseKeyboardNavigationProps {
     itemCount: number;
@@ -20,7 +20,6 @@ export function useKeyboardNavigation({ itemCount, onSelect, onClose, isOpen }: 
         }
 
         const handleKeyDown = (e: KeyboardEvent) => {
-            // 只在按下上下键时阻止默认行为
             if (createHotkey(HOT_KEY_NAME.UP)(e) || createHotkey(HOT_KEY_NAME.DOWN)(e)) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -40,7 +39,6 @@ export function useKeyboardNavigation({ itemCount, onSelect, onClose, isOpen }: 
             }
         };
 
-        // 使用 capture 阶段来确保在事件到达编辑器之前处理
         document.addEventListener('keydown', handleKeyDown, true);
         return () => {
             document.removeEventListener('keydown', handleKeyDown, true);

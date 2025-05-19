@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
-import { Button } from '@/components/ui/button';
+import { Button, buttonVariants } from '@/components/ui/button';
 import { ReactComponent as TickIcon } from '@/assets/icons/tick.svg';
+import { VariantProps } from 'class-variance-authority';
 
 interface MenuButtonProps {
     icon: ReactNode;
@@ -8,7 +9,7 @@ interface MenuButtonProps {
     isActive?: boolean;
     onClick: () => void;
     selected?: boolean;
-    buttonProps?: Record<string, any>;
+    buttonProps?: React.ComponentProps<'button'> & VariantProps<typeof buttonVariants> & { asChild?: boolean };
 }
 
 export function MenuButton({ icon, label, isActive, onClick, selected, buttonProps }: MenuButtonProps) {

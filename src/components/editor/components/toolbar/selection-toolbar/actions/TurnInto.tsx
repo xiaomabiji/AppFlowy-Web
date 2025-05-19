@@ -193,6 +193,7 @@ function TurnInfo() {
             } else {
                 CustomEditor.turnToBlock(editor, node.blockId as string, option.blockType, option.data || {});
             }
+
             setOpen(false);
         } catch (e) { setOpen(false); }
     };
@@ -225,6 +226,7 @@ function TurnInfo() {
         isOpen: open,
         onSelect: (index) => {
             const options = [...suggestionOptions, ...turnIntoOptions];
+
             handleBlockChange(options[index]);
         },
         onClose: () => setOpen(false)
