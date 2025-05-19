@@ -1,4 +1,4 @@
-import { Divider } from '@mui/material';
+import { Separator } from '@/components/ui/separator';
 import { useMemo } from 'react';
 import { Editor, Element, Path } from 'slate';
 import { useSlate } from 'slate-react';
@@ -22,8 +22,6 @@ import {
 } from '@/components/editor/components/toolbar/selection-toolbar/SelectionToolbar.hooks';
 
 import MoreOptions from './actions/MoreOptions';
-
-
 
 function ToolbarActions() {
   const editor = useSlate() as YjsEditor;
@@ -75,11 +73,9 @@ function ToolbarActions() {
     >
       {!isCodeBlock && <>
         <AIAssistant />
-        <Divider
-          className={'my-1.5 bg--border-primary'}
-          orientation={'vertical'}
-          flexItem={true}
-        />
+        <div className="h-5 flex items-center">
+          <Separator orientation="vertical" className="h-5 w-px" />
+        </div>
       </>}
       {
         !isAcrossBlock && !isCodeBlock && <>
@@ -89,37 +85,29 @@ function ToolbarActions() {
           <Italic />
           <Color />
           <ColorHighlight />
-          <Divider
-            className={'my-1.5 bg--border-primary'}
-            orientation={'vertical'}
-            flexItem={true}
-          />
+          <div className="h-5 flex items-center">
+            <Separator orientation="vertical" className="h-5 w-px" />
+          </div>
         </>
       }
       {!isCodeBlock && <InlineCode />}
       {
         !isAcrossBlock && !isCodeBlock && <>
-          <Divider
-            className={'my-1.5 bg--border-primary'}
-            orientation={'vertical'}
-            flexItem={true}
-          />
+          <div className="h-5 flex items-center">
+            <Separator orientation="vertical" className="h-5 w-px" />
+          </div>
           <TurnInto />
-          <Divider
-            className={'my-1.5 bg--border-primary'}
-            orientation={'vertical'}
-            flexItem={true}
-          />
+          <div className="h-5 flex items-center">
+            <Separator orientation="vertical" className="h-5 w-px" />
+          </div>
           <Href />
         </>
       }
       {!isCodeBlock && <Align enabled={toolbarVisible} />}
       {!isCodeBlock && <>
-        <Divider
-          className={'my-1.5 bg--border-primary'}
-          orientation={'vertical'}
-          flexItem={true}
-        />
+        <div className="h-5 flex items-center">
+          <Separator orientation="vertical" className="h-5 w-px" />
+        </div>
         <MoreOptions />
       </>}
     </div>
