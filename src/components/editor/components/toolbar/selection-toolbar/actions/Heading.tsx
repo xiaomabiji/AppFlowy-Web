@@ -1,4 +1,3 @@
-import Button from '@mui/material/Button';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useSlateStatic } from 'slate-react';
@@ -14,6 +13,7 @@ import { ReactComponent as ParagraphSvg } from '@/assets/icons/text.svg';
 import { ReactComponent as TextFormatSvg } from '@/assets/icons/text_format.svg';
 import { ReactComponent as TickIcon } from '@/assets/icons/tick.svg';
 import { ReactComponent as DownArrow } from '@/assets/icons/triangle_down.svg';
+import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useSelectionToolbarContext } from '@/components/editor/components/toolbar/selection-toolbar/SelectionToolbar.hooks';
 
@@ -167,37 +167,27 @@ export function Heading() {
           </div>
         </PopoverTrigger>
         {toolbarVisible && (
-          <PopoverContent className="w-[200px] p-4" align="start" sideOffset={5}>
+          <PopoverContent className="w-[200px] p-2" align="start" sideOffset={5}>
             <div className="flex flex-col gap-1">
               {headingOptions.map((opt, idx) => (
                 <Button
                   key={opt.labelKey}
                   {...getButtonProps(idx)}
-                  startIcon={opt.icon}
-                  color="inherit"
-                  className={`justify-start ${opt.isActive(isParagraph, isActivated) ? 'bg-fill-list-active' : ''}`}
+                  variant="ghost"
+                  className={`
+                    h-8 min-h-8 px-[var(--spacing-spacing-m)]
+                    flex items-center justify-start
+                    text-sm font-normal leading-5
+                    hover:bg-[var(--fill-list-hover)]
+                    focus-visible:outline-none
+                    focus-visible:ring-0
+                    focus:outline-none
+                    focus:border-0
+                    ${selectedIndex === idx ? 'bg-[var(--fill-list-hover)]' : ''}
+                  `}
                   onClick={opt.onClick(toParagraph, toHeading, setOpen)}
-                  disableRipple
-                  sx={{
-                    '.MuiButton-startIcon': {
-                      margin: 0,
-                      marginRight: 'var(--spacing-spacing-m)'
-                    },
-                    padding: '0 var(--spacing-spacing-m)',
-                    height: '32px',
-                    minHeight: '32px',
-                    borderRadius: '8px',
-                    justifyContent: 'flex-start',
-                    textAlign: 'left',
-                    fontSize: '14px',
-                    fontStyle: 'normal',
-                    fontWeight: 400,
-                    lineHeight: '20px',
-                    ...(selectedIndex === idx && {
-                      backgroundColor: 'var(--fill-list-hover)'
-                    })
-                  }}
                 >
+                  <span className="mr-[var(--spacing-spacing-m)]">{opt.icon}</span>
                   {t(opt.labelKey)}
                   {opt.isActive(isParagraph, isActivated) && (
                     <span className="ml-auto flex items-center">
@@ -215,3 +205,4 @@ export function Heading() {
 }
 
 export default Heading;
+

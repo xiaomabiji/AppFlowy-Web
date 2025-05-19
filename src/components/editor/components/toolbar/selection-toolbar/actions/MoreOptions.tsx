@@ -1,4 +1,3 @@
-import { Button } from '@mui/material';
 import { useTranslation } from 'react-i18next';
 import { Editor, Text, Transforms } from 'slate';
 import { useSlate } from 'slate-react';
@@ -8,6 +7,8 @@ import { EditorMarkFormat } from '@/application/slate-yjs/types';
 import { ReactComponent as FormulaSvg } from '@/assets/icons/formula.svg';
 import { ReactComponent as MoreIcon } from '@/assets/icons/more.svg';
 import { ReactComponent as StrikeThroughSvg } from '@/assets/icons/strikethrough.svg';
+import { ReactComponent as TickIcon } from '@/assets/icons/tick.svg';
+import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useSelectionToolbarContext } from '@/components/editor/components/toolbar/selection-toolbar/SelectionToolbar.hooks';
 
@@ -19,6 +20,7 @@ const options = [
     {
         icon: <StrikeThroughSvg className="h-5 w-5" />,
         labelKey: 'editor.strikethrough' as const,
+        isActive: (editor: Editor) => CustomEditor.isMarkActive(editor, EditorMarkFormat.StrikeThrough),
         onClick: (editor: Editor, setOpen: (v: boolean) => void) => {
             CustomEditor.toggleMark(editor, {
                 key: EditorMarkFormat.StrikeThrough,
@@ -30,6 +32,7 @@ const options = [
     {
         icon: <FormulaSvg className="h-5 w-5" />,
         labelKey: 'document.plugins.createInlineMathEquation' as const,
+        isActive: (editor: Editor) => CustomEditor.isMarkActive(editor, EditorMarkFormat.Formula),
         onClick: (editor: Editor, setOpen: (v: boolean) => void) => {
             const selection = editor.selection;
 
@@ -109,37 +112,33 @@ export default function MoreOptions() {
                     </ActionButton>
                 </div>
             </PopoverTrigger>
-            <PopoverContent className="w-[200px] p-4" align="start" sideOffset={5}>
+            <PopoverContent className="w-[200px] p-2" align="start" sideOffset={5}>
                 <div className="flex flex-col gap-1">
                     {options.map((opt, idx) => (
                         <Button
                             key={opt.labelKey}
                             {...getButtonProps(idx)}
-                            startIcon={opt.icon}
-                            color="inherit"
+                            variant="ghost"
+                            className={`
+                                h-8 min-h-8 px-[var(--spacing-spacing-m)]
+                                flex items-center justify-start
+                                text-sm font-normal leading-5
+                                hover:bg-[var(--fill-list-hover)]
+                                focus-visible:outline-none
+                                focus-visible:ring-0
+                                focus:outline-none
+                                focus:border-0
+                                ${selectedIndex === idx ? 'bg-[var(--fill-list-hover)]' : ''}
+                            `}
                             onClick={() => opt.onClick(editor, setOpen)}
-                            disableRipple
-                            sx={{
-                                '.MuiButton-startIcon': {
-                                    margin: 0,
-                                    marginRight: 'var(--spacing-spacing-m)'
-                                },
-                                padding: '0 var(--spacing-spacing-m)',
-                                height: '32px',
-                                minHeight: '32px',
-                                borderRadius: '8px',
-                                justifyContent: 'flex-start',
-                                textAlign: 'left',
-                                fontSize: '14px',
-                                fontStyle: 'normal',
-                                fontWeight: 400,
-                                lineHeight: '20px',
-                                ...(selectedIndex === idx && {
-                                    backgroundColor: 'var(--fill-list-hover)'
-                                })
-                            }}
                         >
+                            <span className="mr-2">{opt.icon}</span>
                             {t(opt.labelKey)}
+                            {opt.isActive(editor) && (
+                                <span className="ml-auto flex items-center">
+                                    <TickIcon className="h-5 w-5 text-[var(--icon-secondary)]" />
+                                </span>
+                            )}
                         </Button>
                     ))}
                 </div>
