@@ -46,7 +46,7 @@ export function SelectionToolbar() {
       <div
         ref={ref}
         className={
-          'selection-toolbar pointer-events-none transform transition-opacity duration-200 absolute z-[100] flex min-h-[32px] w-fit flex-grow items-center rounded-border-radius-border-radius-l bg-surface-primary px-2 py-xs opacity-0 shadow-toolbar'
+          'selection-toolbar pointer-events-none transform transition-opacity duration-200 absolute z-[100] flex min-h-[32px] w-fit flex-grow items-center rounded-400 bg-surface-primary px-2 py-xs opacity-0 shadow-toolbar'
         }
         onMouseDown={(e) => {
           // prevent toolbar from taking focus away from editor

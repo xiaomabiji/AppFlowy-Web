@@ -140,8 +140,8 @@ export function Align({ blockId, enabled = true }: { blockId?: string; enabled?:
             {activeIcon()}
           </ActionButton>
         </PopoverTrigger>
-        <PopoverContent className="w-[200px] p-2 bg-surface-primary rounded-[6px]">
-          <div className="flex flex-col rounded-[12px]">
+        <PopoverContent className="w-[200px] p-2" align="start" sideOffset={5}>
+          <div className="flex flex-col gap-1">
             {alignOptions.map((option, index) => (
               <MenuButton
                 key={option.labelKey}

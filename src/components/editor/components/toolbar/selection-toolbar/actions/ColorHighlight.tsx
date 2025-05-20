@@ -128,23 +128,27 @@ function ColorHighlight() {
                                 <Tooltip disableInteractive={true} key={index} title={color.label} placement={'top'}>
                                     <div
                                         key={index}
-                                        className={
-                                            'relative flex h-6 w-6 cursor-pointer items-center justify-center overflow-hidden rounded-[6px]'
-                                        }
+                                        className="relative flex h-6 w-6 cursor-pointer items-center justify-center overflow-hidden"
                                         onClick={() => handlePickedColor(EditorMarkFormat.BgColor, color.color)}
                                     >
-                                        <div
-                                            className={`absolute top-0 left-0 h-full w-full rounded-[6px] border-2`}
-                                            style={{
-                                                borderColor: activeBgColor === color.color ? 'var(--fill-default)' : undefined,
-                                            }}
-                                        />
-                                        <div
-                                            className={'z-[1] h-full w-full opacity-50 hover:opacity-100'}
-                                            style={{
-                                                backgroundColor: renderColor(color.color),
-                                            }}
-                                        />
+                                        {activeBgColor === color.color ? (
+                                            <>
+                                                <div className="absolute inset-0 rounded-200 border-2 border-[#5555E0] bg-transparent pointer-events-none" />
+                                                <div
+                                                    className="z-[1] w-4 h-4 rounded-100"
+                                                    style={{
+                                                        backgroundColor: renderColor(color.color),
+                                                    }}
+                                                />
+                                            </>
+                                        ) : (
+                                            <div
+                                                className="w-full h-full rounded-200 border border-tertiary"
+                                                style={{
+                                                    backgroundColor: renderColor(color.color),
+                                                }}
+                                            />
+                                        )}
                                     </div>
                                 </Tooltip>
                             );
