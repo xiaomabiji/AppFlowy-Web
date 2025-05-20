@@ -19,7 +19,7 @@ function ColorHighlight() {
     const { t } = useTranslation();
     const { visible: toolbarVisible } = useSelectionToolbarContext();
     const editor = useSlateStatic() as YjsEditor;
-    const isActivated = CustomEditor.isMarkActive(editor, EditorMarkFormat.BgColor);
+    const _isActivated = CustomEditor.isMarkActive(editor, EditorMarkFormat.BgColor);
     const marks = CustomEditor.getAllMarks(editor);
     const activeBgColor = marks.find((mark) => mark[EditorMarkFormat.BgColor])?.[EditorMarkFormat.BgColor];
 
@@ -157,7 +157,7 @@ function ColorHighlight() {
 
     return (
         <>
-            <ActionButton onClick={onClick} active={isActivated} tooltip={t('editor.backgroundColor')}>
+            <ActionButton onClick={onClick} tooltip={t('editor.backgroundColor')}>
                 <span ref={wrapperRef}>
                     <HighlightSvg className="h-5 w-5" />
                 </span>

@@ -18,9 +18,7 @@ function Color() {
   const { t } = useTranslation();
   const { visible: toolbarVisible } = useSelectionToolbarContext();
   const editor = useSlateStatic() as YjsEditor;
-  const isActivated =
-    CustomEditor.isMarkActive(editor, EditorMarkFormat.BgColor) ||
-    CustomEditor.isMarkActive(editor, EditorMarkFormat.FontColor);
+  const _isActivated = CustomEditor.isMarkActive(editor, EditorMarkFormat.FontColor);
   const marks = CustomEditor.getAllMarks(editor);
   const activeFontColor = marks.find((mark) => mark[EditorMarkFormat.FontColor])?.[EditorMarkFormat.FontColor];
 
@@ -155,7 +153,7 @@ function Color() {
 
   return (
     <>
-      <ActionButton onClick={onClick} active={isActivated} tooltip={t('editor.color')}>
+      <ActionButton onClick={onClick} tooltip={t('editor.color')}>
         <span ref={wrapperRef}>
           <ColorSvg className="h-5 w-5" />
         </span>
