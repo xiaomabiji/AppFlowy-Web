@@ -4,6 +4,7 @@ import { af_proto } from '@/proto/messages';
 import { CollabOrigin, Types } from '@/application/types';
 import { Db } from '@/application/services/js-services/sync/db';
 import { Ws } from '@/application/services/js-services/sync/ws';
+import { defaultConfig } from '@/components/main/app.hooks';
 
 export enum UpdateFlags {
     V1 = 0x00,
@@ -23,8 +24,20 @@ export const parseRid = (rid: string): af_proto.messages.IRid => {
 }
 
 export const createWorkspaceController = async (workspaceId: string): Promise<WorkspaceController> => {
+    const authToken = localStorage.getItem('token') || '';
+    const uid = localStorage.getItem('uid') || '';
+    const deviceId = localStorage.getItem('x-device-id') || '';
+    const wsUrl = defaultConfig.cloudConfig.wsURL || '';
     const options: WorkspaceControllerOptions = {
+        workspaceId,
+        authToken,
+        uid,
+        deviceId,
+        baseWebsocketUrl: wsUrl,
     }
+    const controller = new WorkspaceController(options);
+    await controller.open();
+    return controller;
 }
 
 /**
@@ -39,7 +52,7 @@ export class WorkspaceController {
     ws: Ws;
     db: Db;
     options: WorkspaceControllerOptions;
-    
+
     constructor(options: WorkspaceControllerOptions) {
         this.options = options
         this.docs = new Map()
@@ -166,7 +179,7 @@ export class WorkspaceController {
                 })
             }
         }
-        
+
         if (message.awarenessUpdate) {
             const payload = message.awarenessUpdate.payload!;
             const context = this.docs.get(objectId)
@@ -174,13 +187,13 @@ export class WorkspaceController {
                 awarenessProtocol.applyAwarenessUpdate(context.awareness, payload, CollabOrigin.Remote)
             }
         }
-        
+
         if (message.syncRequest) {
             const context = this.docs.get(objectId)
             let doc = context?.doc
             if (!doc) {
                 doc = await this.db.collab(objectId)
-            } 
+            }
             const update = Y.encodeStateAsUpdateV2(doc!)
             this.ws.send({
                 objectId,
@@ -191,7 +204,7 @@ export class WorkspaceController {
                 }
             })
         }
-        
+
         if (message.accessChanged) {
             const { canRead, canWrite, reason } = message.accessChanged
             if (!canRead && !canWrite) {
@@ -207,7 +220,7 @@ export class WorkspaceController {
             url += '/'
         }
         url += options.workspaceId
-        url += '&uid=' + options.uid
+        url += '?uid=' + options.uid
         url += '&deviceId=' + options.deviceId
         url += '&clientId=' + this.db.clientId
         url += '&token=' + options.authToken

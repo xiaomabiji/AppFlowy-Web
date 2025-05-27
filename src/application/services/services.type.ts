@@ -107,7 +107,7 @@ export interface AppService {
   getWorkspaceSubscriptions: (workspaceId: string) => Promise<Subscription[]>;
   registerDocUpdate: (doc: YDoc, context: {
     workspaceId: string, objectId: string, collabType: Types
-  }) => void;
+  }) => Promise<void>;
   importFile: (file: File, onProgress: (progress: number) => void) => Promise<void>;
   createSpace: (workspaceId: string, payload: CreateSpacePayload) => Promise<string>;
   updateSpace: (workspaceId: string, payload: UpdateSpacePayload) => Promise<void>;

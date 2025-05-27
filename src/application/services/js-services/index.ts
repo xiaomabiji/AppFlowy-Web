@@ -18,6 +18,7 @@ import {
 } from '@/application/services/js-services/fetch';
 import { APIService } from '@/application/services/js-services/http';
 import { SyncManager } from '@/application/services/js-services/sync';
+import { createWorkspaceController, WorkspaceController } from '@/application/services/js-services/sync/controller';
 
 import { AFService, AFServiceConfig } from '@/application/services/services.type';
 import { emit, EventType } from '@/application/session';
@@ -68,6 +69,8 @@ export class AFClientService implements AFService {
       publishName: string;
     }
   > = new Map();
+
+  private workspaces: Map<string, WorkspaceController> = new Map();
 
   constructor(config: AFServiceConfig) {
     APIService.initAPIService(config.cloudConfig);
@@ -350,7 +353,12 @@ export class AFClientService implements AFService {
   }
 
   async openWorkspace(workspaceId: string) {
-    return APIService.openWorkspace(workspaceId);
+    let workspaceController = this.workspaces.get(workspaceId);
+    if (!workspaceController) {
+      await APIService.openWorkspace(workspaceId);
+      workspaceController = await createWorkspaceController(workspaceId);
+      this.workspaces.set(workspaceId, workspaceController);
+    }
   }
 
   async createWorkspace(payload: CreateWorkspacePayload) {
@@ -549,7 +557,7 @@ export class AFClientService implements AFService {
     return APIService.getWorkspaceSubscriptions(workspaceId);
   }
 
-  registerDocUpdate(doc: Y.Doc, context: {
+  async registerDocUpdate(doc: Y.Doc, context: {
     workspaceId: string, objectId: string, collabType: Types
   }) {
     const token = getTokenParsed();
@@ -559,9 +567,11 @@ export class AFClientService implements AFService {
       throw new Error('User not found');
     }
 
-    const sync = new SyncManager(doc, { userId, ...context });
-
-    sync.initialize();
+    const workspace = this.workspaces.get(context.workspaceId);
+    if (!workspace) {
+      throw new Error(`Workspace ${context.workspaceId} not opened`);
+    }
+    await workspace.mount({ doc, awareness: undefined, collabType: context.collabType });
   }
 
   async importFile(file: File, onProgress: (progress: number) => void) {
