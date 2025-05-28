@@ -17,9 +17,7 @@ import {
   fetchViewInfo,
 } from '@/application/services/js-services/fetch';
 import { APIService } from '@/application/services/js-services/http';
-import { SyncManager } from '@/application/services/js-services/sync';
-import { createWorkspaceController, WorkspaceController } from '@/application/services/js-services/sync/controller';
-
+import { openWorkspaceController, WorkspaceController } from '@/application/services/js-services/sync/controller';
 import { AFService, AFServiceConfig } from '@/application/services/services.type';
 import { emit, EventType } from '@/application/session';
 import { afterAuth, AUTH_CALLBACK_URL, withSignIn } from '@/application/session/sign_in';
@@ -354,9 +352,10 @@ export class AFClientService implements AFService {
 
   async openWorkspace(workspaceId: string) {
     let workspaceController = this.workspaces.get(workspaceId);
+
     if (!workspaceController) {
       await APIService.openWorkspace(workspaceId);
-      workspaceController = await createWorkspaceController(workspaceId);
+      workspaceController = await openWorkspaceController(workspaceId);
       this.workspaces.set(workspaceId, workspaceController);
     }
   }
@@ -568,9 +567,11 @@ export class AFClientService implements AFService {
     }
 
     const workspace = this.workspaces.get(context.workspaceId);
+
     if (!workspace) {
       throw new Error(`Workspace ${context.workspaceId} not opened`);
     }
+
     await workspace.mount({ doc, awareness: undefined, collabType: context.collabType });
   }
 
